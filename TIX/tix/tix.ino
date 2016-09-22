@@ -5,11 +5,16 @@ iarduino_RTC time(RTC_DS3231);
 
 // How many leds in your strip?
 #define NUM_LEDS 27
+#define START_OF_HOUR_LEDS        3
+#define START_OF_HOUR_DECS_LEDS   0
+#define START_OF_MINUTE_LEDS      18
+#define START_OF_MINUTE_DECS_LEDS 12   
 
 bool b100Hz;
 bool b10Hz;
 bool b1Hz;
-int seconds;
+int seconds=15;
+byte minutes=39;
 
 // For led chips like Neopixels, which have a data line, ground, and power, you just
 // need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
@@ -21,6 +26,13 @@ int seconds;
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
+
+void setHours (int number, CRGB color) {
+  for(int i = 0; i<10; i++) {
+    if(i<=number)   leds[START_OF_HOUR_LEDS+i]=color;
+    else            leds[START_OF_HOUR_LEDS+i]=CRGB::Black; 
+  }
+}
 
 void setup() { 
   delay(300);
@@ -49,7 +61,8 @@ if(b1Hz){
 
   //Serial.println(time.gettime("d-m-Y, H:i:s, D")); // выводим время
   time.gettime();
-  Serial.println(seconds);
+  //Serial.println(time.gettime("s")/*seconds*/);
+  Serial.println(time.seconds);
   leds[0] = CRGB::Green;
   FastLED.show();
 }
