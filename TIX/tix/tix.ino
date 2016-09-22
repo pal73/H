@@ -16,6 +16,23 @@ bool b1Hz;
 int seconds=15;
 byte minutes=39;
 
+const byte a = 0b10101010;
+const int b = 0b1010101011110000;
+
+const int DIGITS_3[3][2][10]={
+  { {0b0000000000000001,0b0000000000000010,0b0000000000000100}, {3} },
+  { {0b0000000000000011,0b0000000000000110,0b0000000000000101}, {3} },
+  { {0b0000000000000111}, {1}  }
+};
+
+const int DIGITS_6[6][2][10]={
+  { {0b0000000000000001,0b0000000000000010,0b0000000000000100,0b0000000000001000,0b0000000000010000,0b0000000000100000}, {6} },
+  { {0b0000000000100001,0b0000000000010001,0b0000000000000101,0b0000000000000011,0b0000000000001001}, {5} },
+/*3*/   { {0b0000000000000111,0b0000000000111000,0b0000000000010101,0b0000000000101010,0b0000000000010110,0b0000000000110010,0b0000000000010011,0b0000000000011010}, {8}  },
+/*4*/   { {0b0000000000110110,0b0000000000101101,0b0000000000011011,0b0000000000011110,0b0000000000110011,0b0000000000111100,0b0000000000111001,0b0000000000100111,0b0000000000001111}, {9} },
+/*5*/   { {0b0000000000111110,0b0000000000111101,0b0000000000111011,0b0000000000110111,0b0000000000101111,0b0000000000011111}, {6} },
+/*6*/   { {0b0000000000111111}, {1} },
+};
 // For led chips like Neopixels, which have a data line, ground, and power, you just
 // need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
 // ground, and power), like the LPD8806 define both DATA_PIN and CLOCK_PIN
@@ -27,13 +44,53 @@ byte minutes=39;
 // Define the array of leds
 CRGB leds[NUM_LEDS];
 
-void setHours (int number, CRGB color) {
-  for(int i = 0; i<10; i++) {
-    if(i<=number)   leds[START_OF_HOUR_LEDS+i]=color;
-    else            leds[START_OF_HOUR_LEDS+i]=CRGB::Black; 
+void showHours (int number, CRGB color) {
+  if(number!=0) {
+    for(int i = 0; i<10; i++) {
+      if(i<number)   leds[START_OF_HOUR_LEDS+i]=color;
+      else            leds[START_OF_HOUR_LEDS+i]=CRGB::Black; 
+    }
+  } else {
+    for(int i = 0; i<10; i++) leds[START_OF_HOUR_LEDS+i]=CRGB::Black;
+    leds[START_OF_HOUR_LEDS+4]=CRGB::White; 
   }
 }
 
+void showHourDecs (int number, CRGB color) {
+  if(number!=0) {
+    for(int i = 0; i<3; i++) {
+      if(i<number)   leds[START_OF_HOUR_DECS_LEDS+i]=color;
+      else            leds[START_OF_HOUR_DECS_LEDS+i]=CRGB::Black; 
+    }
+  } else {
+    for(int i = 0; i<3; i++) leds[START_OF_HOUR_DECS_LEDS+i]=CRGB::Black;
+    leds[START_OF_HOUR_DECS_LEDS+1]=CRGB::White; 
+  }
+}
+
+void showMinutes (int number, CRGB color) {
+  if(number!=0) {
+    for(int i = 0; i<10; i++) {
+      if(i<number)   leds[START_OF_MINUTE_LEDS+i]=color;
+      else            leds[START_OF_MINUTE_LEDS+i]=CRGB::Black; 
+    }
+  } else {
+    for(int i = 0; i<10; i++) leds[START_OF_MINUTE_LEDS+i]=CRGB::Black;
+    leds[START_OF_MINUTE_LEDS+4]=CRGB::White; 
+  }
+}
+
+void showMinuteDecs (int number, CRGB color) {
+  if(number!=0) {
+    for(int i = 0; i<6; i++) {
+      if(i<number)   leds[START_OF_MINUTE_DECS_LEDS+i]=color;
+      else            leds[START_OF_MINUTE_DECS_LEDS+i]=CRGB::Black; 
+    }
+  } else {
+    for(int i = 0; i<6; i++) leds[START_OF_MINUTE_DECS_LEDS+i]=CRGB::Black;
+    leds[START_OF_MINUTE_DECS_LEDS+4]=CRGB::White; 
+  }
+}
 void setup() { 
   delay(300);
   Serial.begin(9600);
@@ -59,15 +116,22 @@ delay(1); // приостанавливаем на 1 мс, чтоб не выв�
 if(b1Hz){ 
   b1Hz=0;
 
-  //Serial.println(time.gettime("d-m-Y, H:i:s, D")); // выводим время
+  Serial.println(time.gettime("d-m-Y, H:i:s, D")); // выводим время
   time.gettime();
-  //Serial.println(time.gettime("s")/*seconds*/);
-  Serial.println(time.seconds);
-  leds[0] = CRGB::Green;
+  //leds[0] = CRGB::Green;
+  Serial.println(a); // выводим время
+  Serial.println(b); // выводим время
+  showHours (time.Hours%10, CRGB::Red);
+  showHourDecs (time.Hours/10, CRGB::Green);
+  showMinutes (time.minutes%10, CRGB::Blue);
+  showMinuteDecs (time.minutes/10, CRGB::Yellow);  
   FastLED.show();
 }
 
-
+if(b10Hz){ 
+  b10Hz=0;
+time.gettime();
+}
 
 
 
