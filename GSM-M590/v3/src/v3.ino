@@ -1,9 +1,11 @@
+#include <Arduino.h>
+
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(2, 3);          // RX, TX
 int ch = 0;
 String val = "";
 #define MASTER "+79139294352"          //укажите  телефон хозяина
-//#include <OneWire.h>
+#include <OneWire.h>
 
 
 #define GREEN_LED 3
@@ -29,9 +31,9 @@ delay(100);
 mySerial.println("AT+CSCS=\"GSM\"");  //режим кодировки текста
 delay(100);
 mySerial.println("AT+CNMI=2,2");
- 
+
 }
- 
+
 void loop()
 {
 digitalWrite(YELLOW_LED,ylState);
@@ -39,10 +41,10 @@ digitalWrite(GREEN_LED,glState);
 
 if(millis()/1000!=oldMillis) {
  ylState=!ylState;
- glState=!glState; 
+ glState=!glState;
 }
 oldMillis=millis()/1000;
-  
+
 byte data[2];
 //ds.reset();
 //ds.write(0xCC);
@@ -71,7 +73,7 @@ delay(200);                        //выждем, чтобы строка ус�
       } else {
         Serial.println("NO MASTER SMS");
       }
- 
+
       //----------------------- поиск кодового слова в СМС (вообще эту часть надо поместить внутрь предыдущей, но если использовать кодовое слово не совпадающее с сообщениями модема, то не обязательно)
       if (val.indexOf("temp") > -1) {      // если обнаружено кодовое слово
         Serial.println("send you ok");      // сообщаем об этом в терминал (если нужно)
@@ -108,4 +110,3 @@ void sms(String text, String phone, String Temp)
   mySerial.println("AT+CMGD=1");        //стираем память смс
   delay(100);
 }
-

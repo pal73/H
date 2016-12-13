@@ -1,9 +1,10 @@
 wifi.setmode(wifi.STATION)
-wifi.sta.config("SPA3000","2122232425") 
+--wifi.sta.config("SPA3000","2122232425") 
+wifi.sta.config("PAL-HOME-XI","palpalpal") 
 
 --while wifi.sta.getip()==nil do end
 
-tmr.delay(5000000)
+tmr.delay(1000000)
 
 print(wifi.sta.getip()) 
 

@@ -1,2 +1,3 @@
---dofile("spa2.lua")
+
 print("Reload")
+dofile("spa2.lua")
