@@ -1,6 +1,6 @@
-print("version1")
+print("version3")
 wifi.setmode(wifi.STATION)
-wifi.sta.config("SPA3000","2122232425")
+wifi.sta.config("SPA2016","UMHHwAGa")
 print(wifi.sta.getip()) 
 
 gpio.mode(3, gpio.OUTPUT)
@@ -11,8 +11,9 @@ gpio.write(4, gpio.LOW);
 srv=net.createServer(net.TCP) 
 srv:listen(80,function(conn) 
     conn:on("receive", function(client,request)
-    
-        local buf = "";
+
+        print(request)
+        local buf = "123";
         local _, _, method, path, vars = string.find(request, "([A-Z]+) (.+)?(.+) HTTP");
         if(method == nil)then 
             _, _, method, path = string.find(request, "([A-Z]+) (.+) HTTP"); 
