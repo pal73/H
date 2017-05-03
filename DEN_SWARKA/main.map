@@ -1,0 +1,15 @@
+CodeVisionAVR C Compiler V1.24.1d Standard
+(C) Copyright 1998-2004 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.ro
+e-mail:office@hpinfotech.ro
+
+File: E:\H\DEN_SWARKA\main.c
+Global variables memory map:
+
+Variable                          Address   Size
+ind_cnt                                R4      1
+ind_out                              200h      2
+dig                                  202h      3
+zero_on                          GPIOR0.0    1/8
+bIN_ENC                          GPIOR0.1    1/8
+plazma_plazma                       R5,R6      2

@@ -1,0 +1,15 @@
+Creating   'main.eep'
+Creating   'main.obj'
+Creating   'main.lst'
+
+Assembling 'main.asm'
+Including  'main.vec'
+Including  'main.inc'
+
+Program memory usage:
+Code             :  591 words
+Constants (dw/db):   13 words
+Unused           :    0 words
+Total            :  604 words
+
+Assembly complete with no errors.
