@@ -1,0 +1,11 @@
+main_only_775.c
+i2c.c
+stm8_interrupt_vector.c
+include\i2c.h
+include\stm8s.h
+c:\program files (x86)\cosmic\cxstm8_32k\hstm8\iostm8s103.h
+c:\program files (x86)\cosmic\cxstm8_32k\hstm8\mods0.h
+c:\program files (x86)\cosmic\cxstm8_32k\hstm8\stdio.h
+c:\program files (x86)\cosmic\cxstm8_32k\hstm8\string.h
+include\stm8s_type.h
+main.h
