@@ -15,7 +15,7 @@ for port in ports:
 
 wrk_port=""
 
-for port in result[-1:]:
+for port in result[:]:
     try:
         #print(port)
         s=serial.Serial(port,9600,timeout=3)
@@ -47,7 +47,7 @@ while True:
     else:
         next_start_time = datetime.datetime.now()
         print (next_start_time)
-        next_start_time+=datetime.timedelta(0,10,0,0,0,0,0)
+        next_start_time+=datetime.timedelta(0,0,0,0,0,1,0)
         print (next_start_time)
 
         s=serial.Serial(wrk_port,9600,timeout=3)
