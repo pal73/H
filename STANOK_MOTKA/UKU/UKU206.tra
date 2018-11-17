@@ -1,0 +1,40 @@
+*** Creating Trace Output File 'UKU206.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '"startup.o"'
+### List of Objects: adding '"common_func.o"'
+### List of Objects: adding '"control.o"'
+### List of Objects: adding '"mess.o"'
+### List of Objects: adding '"ret.o"'
+### List of Objects: adding '"gran.o"'
+### List of Objects: adding '"avar_hndl.o"'
+### List of Objects: adding '"eeprom_map.o"'
+### List of Objects: adding '"main.o"'
+### List of Objects: adding '"i2c.o"'
+### List of Objects: adding '"watchdog.o"'
+### List of Objects: adding '"memo.o"'
+### List of Objects: adding '"timer.o"'
+### List of Objects: adding '"lcd_agm1232_uku206.o"'
+### List of Objects: adding '"pcf8563.o"'
+### List of Objects: adding '"25lc640.o"'
+### List of Objects: adding '"ad7705.o"'
+### List of Objects: adding '"beep.o"'
+### List of Objects: adding '"full_can.o"'
+### List of Objects: adding '"uart0.o"'
+### List of Objects: adding '"uart1.o"'
+### ADS-LD Command completed:
+--device DARMP "startup.o" "common_func.o" "control.o" "mess.o" "ret.o" "gran.o" "avar_hndl.o" "eeprom_map.o" "main.o" "i2c.o" "watchdog.o" "memo.o" "timer.o" "lcd_agm1232_uku206.o" "pcf8563.o" "25lc640.o" "ad7705.o" "beep.o" "full_can.o" "uart0.o" "uart1.o" --library_type=microlib --feedback "UKU206.fed" 
+--strict --scatter "UKU206.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\UKU206.map" -o "UKU206.axf"### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: 'UKU206.axf'
+### ADS-LD Command File: 'UKU206.lnp'
+### Checking for dirty Components...
+### Creating CmdFile 'UKU206.lnp', Handle=0x0000024C
+### Writing '.lnp' file
+### ADS-LD Command file 'UKU206.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.

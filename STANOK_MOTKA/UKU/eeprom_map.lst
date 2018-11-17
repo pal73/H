@@ -1,0 +1,563 @@
+L 1 "eeprom_map.c"
+N#include "eeprom_map.h"
+L 1 "eeprom_map.h" 1
+N
+N#define EE_CAN_RESET_CNT	0x06
+N#define RESET_CNT	0x08
+N
+N#define SECTOR_KOEF 0x10
+N
+N#define EE_KUBAT1		SECTOR_KOEF
+N#define EE_KUBAT2		SECTOR_KOEF+2
+N#define EE_KI0BAT1		SECTOR_KOEF+4
+N#define EE_KI0BAT2		SECTOR_KOEF+6
+N#define EE_KI1BAT1		SECTOR_KOEF+8
+N#define EE_KI1BAT2		SECTOR_KOEF+10
+N#define EE_KTBAT1		SECTOR_KOEF+12
+N#define EE_KTBAT2		SECTOR_KOEF+14
+N#define EE_KUNET       	SECTOR_KOEF+16
+N#define EE_KFNET       	SECTOR_KOEF+18
+N#define EE_KULOAD       	SECTOR_KOEF+20
+N#define  EE_KUNET_EXT0   SECTOR_KOEF+22
+N#define  EE_KUNET_EXT1   SECTOR_KOEF+24
+N#define  EE_KUNET_EXT2   SECTOR_KOEF+26
+N#define EE_KUBATM1		SECTOR_KOEF+28
+N#define EE_KUBATM2		SECTOR_KOEF+30
+N#define EE_KVV0_EB2		SECTOR_KOEF+32
+N#define EE_KVV1_EB2		SECTOR_KOEF+34
+N#define EE_KVV2_EB2		SECTOR_KOEF+36
+N#define EE_KPES0_EB2	SECTOR_KOEF+38
+N#define EE_KPES1_EB2	SECTOR_KOEF+40
+N#define EE_KPES2_EB2	SECTOR_KOEF+42
+N#define EE_KUNETA      	SECTOR_KOEF+44
+N#define EE_KUNETB      	SECTOR_KOEF+46
+N#define EE_KUNETC      	SECTOR_KOEF+48
+N#define EE_KUBPS      	SECTOR_KOEF+50
+N#define EE_KUOUT      	SECTOR_KOEF+52
+N#define EE_KUVD      	SECTOR_KOEF+54
+N
+N#define SECTOR_SETS 	SECTOR_KOEF+100
+N
+N#define EE_MAIN_IST 	SECTOR_SETS+2
+N#define EE_UMAX    		SECTOR_SETS+4
+N#define EE_UOUT    		SECTOR_SETS+6
+N#define EE_UAVT    		SECTOR_SETS+8
+N#define EE_TMAX			SECTOR_SETS+10
+N#define EE_AV_OFF_AVT   SECTOR_SETS+12
+N#define EE_USIGN		SECTOR_SETS+14
+N#define EE_UMN			SECTOR_SETS+16
+N#define EE_ZV_ON		SECTOR_SETS+18
+N#define EE_IKB			SECTOR_SETS+20
+N#define EE_KVZ			SECTOR_SETS+22
+N#define EE_IMAX		SECTOR_SETS+24
+N#define EE_IMIN		SECTOR_SETS+26
+N#define EE_APV_ON		SECTOR_SETS+28
+N#define EE_IZMAX		SECTOR_SETS+30
+N#define EE_U0B			SECTOR_SETS+32
+N#define EE_TZAS		SECTOR_SETS+34
+N#define EE_NUMIST  		SECTOR_SETS+36
+N#define EE_NUMINV  		SECTOR_SETS+38
+N#define KI0SRC1     	SECTOR_SETS+40
+N#define KI0SRC2     	SECTOR_SETS+42
+N#define EE_APV_ON1  	SECTOR_SETS+44
+N#define EE_APV_ON2  	SECTOR_SETS+46
+N#define EE_APV_ON2_TIME  SECTOR_SETS+48
+N#define KT_EXT0		SECTOR_SETS+50
+N#define KT_EXT1		SECTOR_SETS+52
+N#define KT_EXT2		SECTOR_SETS+54
+N#define EE_AVZ_TIME		SECTOR_SETS+56
+N#define EE_HOUR_AVZ		SECTOR_SETS+58	
+N#define EE_MIN_AVZ  	SECTOR_SETS+60
+N#define EE_SEC_AVZ  	SECTOR_SETS+62
+N#define EE_DATE_AVZ 	SECTOR_SETS+64
+N#define EE_MONTH_AVZ	SECTOR_SETS+66
+N#define EE_YEAR_AVZ 	SECTOR_SETS+68
+N#define EE_AVZ			SECTOR_SETS+70
+N#define EE_MNEMO_ON 	SECTOR_SETS+72
+N#define EE_MNEMO_TIME 	SECTOR_SETS+74
+N#define EE_VZ_HR		SECTOR_SETS+76
+N#define EE_TBAT          SECTOR_SETS+78
+N#define EE_U_AVT         SECTOR_SETS+80
+N#define EE_TSIGN		SECTOR_SETS+82
+N#define EE_DU			SECTOR_SETS+84
+N#define EE_PAR			SECTOR_SETS+86
+N#define EE_TBATMAX		SECTOR_SETS+88
+N#define EE_TBATSIGN		SECTOR_SETS+90
+N#define EE_TBOXMAX		SECTOR_SETS+92
+N#define EE_TBOXREG		SECTOR_SETS+94
+N#define EE_TBOXVENTMAX	SECTOR_SETS+96
+N#define EE_TLOADDISABLE	SECTOR_SETS+98
+N#define EE_TLOADENABLE	SECTOR_SETS+100
+N#define EE_TBATDISABLE	SECTOR_SETS+102
+N#define EE_TBATENABLE	SECTOR_SETS+104
+N#define EE_TSYSMAX		SECTOR_SETS+106
+N#define EE_RELE_VENT_LOGIC	SECTOR_SETS+108
+N#define EE_TVENTON		SECTOR_SETS+110
+N#define EE_TVENTOFF	SECTOR_SETS+112	
+N#define EE_RELEVENTSIGN	 SECTOR_SETS+114
+N#define EE_NPN_OUT	 SECTOR_SETS+116
+N#define EE_NPN_SIGN	 SECTOR_SETS+118
+N#define EE_UONPN	 SECTOR_SETS+120
+N#define EE_UVNPN	 SECTOR_SETS+122
+N#define EE_TZNPN	 SECTOR_SETS+124
+N#define EE_TERMOKOMP	 	SECTOR_SETS+126
+N#define EE_TBOXVENTON	 	SECTOR_SETS+128
+N#define EE_TBOXVENTOFF	 	SECTOR_SETS+130
+N#define EE_TBOXWARMON	 	SECTOR_SETS+132 
+N#define EE_TBOXWARMOFF	 	SECTOR_SETS+134
+N#define EE_NUMBYPASS	 	SECTOR_SETS+136
+N#define EE_TWARMON			SECTOR_SETS+138
+N#define EE_TWARMOFF			SECTOR_SETS+140
+N#define EE_BAT_TYPE			SECTOR_SETS+142
+N#define EE_UINMAX			SECTOR_SETS+144
+N#define EE_UINMIN			SECTOR_SETS+146
+N#define EE_UOUTMAX			SECTOR_SETS+148
+N#define EE_UOUTMIN			SECTOR_SETS+150
+N#define EE_TELECORE2015_KLIMAT_WARM_SIGNAL	SECTOR_SETS+144
+N#define EE_TELECORE2015_KLIMAT_WARM_ON		SECTOR_SETS+146
+N#define EE_TELECORE2015_KLIMAT_WARM_OFF		SECTOR_SETS+148
+N#define EE_TELECORE2015_KLIMAT_CAP			SECTOR_SETS+150
+N#define EE_TELECORE2015_KLIMAT_VENT_ON		SECTOR_SETS+152
+N#define EE_TELECORE2015_KLIMAT_VENT_OFF		SECTOR_SETS+154
+N#define EE_TELECORE2015_KLIMAT_VVENT_ON		SECTOR_SETS+156
+N#define EE_TELECORE2015_KLIMAT_VVENT_OFF	SECTOR_SETS+158
+N#define EE_TELECORE2015_KLIMAT_VENT_SIGNAL	SECTOR_SETS+160
+N#define EE_SPEED_CHRG_CURR		 			SECTOR_SETS+162
+N#define EE_SPEED_CHRG_VOLT		 			SECTOR_SETS+164
+N#define EE_SPEED_CHRG_TIME					SECTOR_SETS+166
+N#define EE_SPEED_CHRG_AVT_EN				SECTOR_SETS+168	
+N#define EE_SPEED_CHRG_D_U					SECTOR_SETS+170
+N#define EE_SPEED_CHRG_BLOCK_SRC				SECTOR_SETS+172
+N#define EE_SPEED_CHRG_BLOCK_LOG				SECTOR_SETS+174
+N#define EE_DU_LI_BAT						SECTOR_SETS+176
+N#define EE_FORVARDBPSCHHOUR					SECTOR_SETS+178
+N#define EE_FORVBPSHOURCNT					SECTOR_SETS+180
+N#define EE_U_OUT_KONTR_MAX					SECTOR_SETS+182
+N#define EE_U_OUT_KONTR_MIN					SECTOR_SETS+184
+N#define EE_U_OUT_KONTR_DELAY				SECTOR_SETS+186
+N#define EE_DOP_RELE_FUNC					SECTOR_SETS+188
+N#define EE_IPS_BLOCK_SRC			   		SECTOR_SETS+190
+N#define EE_IPS_BLOCK_LOG					SECTOR_SETS+192
+N#define EE_NUMBAT_TELECORE					SECTOR_SETS+194
+N#define EE_CNTRL_HNDL_TIME					SECTOR_SETS+196
+N#define EE_USODERG_LI_BAT					SECTOR_SETS+198
+N#define EE_TELECORE2017_KLIMAT_WARM_SIGNAL	EE_TELECORE2015_KLIMAT_WARM_SIGNAL
+N#define EE_TELECORE2017_KLIMAT_VENT_SIGNAL	EE_TELECORE2015_KLIMAT_VENT_SIGNAL
+N#define EE_TELECORE2017_KLIMAT_WARM_ON		EE_TELECORE2015_KLIMAT_WARM_ON
+N#define EE_TELECORE2017_KLIMAT_WARM_OFF		EE_TELECORE2015_KLIMAT_WARM_OFF
+N#define EE_TELECORE2017_KLIMAT_CAP			EE_TELECORE2015_KLIMAT_CAP
+N#define EE_TELECORE2017_KLIMAT_VENT_ON0		SECTOR_SETS+200
+N#define EE_TELECORE2017_KLIMAT_VENT_ON20	SECTOR_SETS+202
+N#define EE_TELECORE2017_KLIMAT_VENT_ON40	SECTOR_SETS+204
+N#define EE_TELECORE2017_KLIMAT_VENT_ON60	SECTOR_SETS+206
+N#define EE_TELECORE2017_KLIMAT_VENT_ON80	SECTOR_SETS+208
+N#define EE_TELECORE2017_KLIMAT_VENT_ON100	SECTOR_SETS+210
+N#define EE_TELECORE2017_KLIMAT_DVENT_ON0	SECTOR_SETS+212
+N#define EE_TELECORE2017_KLIMAT_DVENT_ON20	SECTOR_SETS+214
+N#define EE_RELE_SET_MASK0					SECTOR_SETS+216
+N#define EE_RELE_SET_MASK1					SECTOR_SETS+218
+N#define EE_RELE_SET_MASK2					SECTOR_SETS+220
+N#define EE_RELE_SET_MASK3					SECTOR_SETS+222
+N#define EE_AUSW_MAIN 						SECTOR_SETS+224
+N#define EE_AUSW_MAIN_NUMBER 				SECTOR_SETS+226 
+N#define EE_AUSW_UKU_NUMBER					SECTOR_SETS+228
+N
+N#ifdef UKU_TELECORE2017
+S#define EE_TELECORE2017_ULINECC			EE_UB0
+S#define EE_TELECORE2017_Q				EE_MAIN_IST	
+S#define EE_TELECORE2017_IZMAX1			EE_DU_LI_BAT
+S#define EE_TELECORE2017_IZMAX2			EE_MNEMO_ON
+S#define EE_TELECORE2017_K1				EE_UB20
+S#define EE_TELECORE2017_K2				EE_KVZ	
+S#define EE_TELECORE2017_K3				EE_IZMAX
+S#define EE_TELECORE2017_T4				EE_NUMINV
+N#endif
+N
+N#define SECTOR_AUSW  		SECTOR_KOEF+300
+N
+N
+N
+N/*#define EE_AUSW_UKU 		SECTOR_AUSW+4 
+N#define EE_AUSW_UKU_SUB 		SECTOR_AUSW+6*/
+N
+N/*#define EE_AUSW_DAY			SECTOR_AUSW+10
+N#define EE_AUSW_MONTH		SECTOR_AUSW+12
+N#define EE_AUSW_YEAR		SECTOR_AUSW+14
+N#define EE_AUSW_BPS1_NUMBER	SECTOR_AUSW+16		
+N#define EE_AUSW_BPS2_NUMBER	SECTOR_AUSW+18
+N#define EE_AUSW_RS232		SECTOR_AUSW+20
+N#define EE_AUSW_PDH			SECTOR_AUSW+22
+N#define EE_AUSW_SDH			SECTOR_AUSW+24
+N#define EE_AUSW_ETH			SECTOR_AUSW+26 */
+N
+N#define SECTOR_SETS2  					SECTOR_KOEF+350
+N#define EE_QSODERG_LI_BAT				SECTOR_SETS2
+N#define EE_TVENTMAX						SECTOR_SETS2+2
+N#define EE_ICA_CH 						SECTOR_SETS2+4
+N#define EE_ICA_EN						SECTOR_SETS2+6
+N#define EE_ICA_MODBUS_ADDRESS			SECTOR_SETS2+8
+N#define EE_ICA_MODBUS_TCP_IP1			SECTOR_SETS2+10
+N#define EE_ICA_MODBUS_TCP_IP2			SECTOR_SETS2+12
+N#define EE_ICA_MODBUS_TCP_IP3			SECTOR_SETS2+14
+N#define EE_ICA_MODBUS_TCP_IP4			SECTOR_SETS2+16
+N#define EE_ICA_MODBUS_TCP_UNIT_ID		SECTOR_SETS2+18
+N#define EE_PWM_START					SECTOR_SETS2+20
+N#define EE_KB_ALGORITM					SECTOR_SETS2+22
+N#define EE_REG_SPEED					SECTOR_SETS2+24
+N
+N#define SECTOR_BAT  		SECTOR_KOEF+400
+N
+N#define EE_BAT1_IS_ON         SECTOR_BAT
+N#define EE_BAT1_DAY_OF_ON     SECTOR_BAT+2
+N#define EE_BAT1_MONTH_OF_ON   SECTOR_BAT+4
+N#define EE_BAT1_YEAR_OF_ON    SECTOR_BAT+6
+N#define EE_BAT1_C_REAL        SECTOR_BAT+8
+N#define EE_BAT1_RESURS        SECTOR_BAT+10
+N#define EE_BAT1_ZAR_CNT      	SECTOR_BAT+12
+N#define EE_BAT1_ZAR_CNT_KE   	SECTOR_BAT+14
+N#define EE_BAT1_C_NOM         SECTOR_BAT+16
+N
+N
+N#define EE_BAT2_IS_ON         SECTOR_BAT+30
+N#define EE_BAT2_DAY_OF_ON     SECTOR_BAT+32
+N#define EE_BAT2_MONTH_OF_ON   SECTOR_BAT+34
+N#define EE_BAT2_YEAR_OF_ON    SECTOR_BAT+36
+N#define EE_BAT2_C_REAL        SECTOR_BAT+38
+N#define EE_BAT2_RESURS        SECTOR_BAT+40
+N#define EE_BAT2_ZAR_CNT       SECTOR_BAT+42
+N#define EE_BAT2_ZAR_CNT_KE    SECTOR_BAT+44
+N#define EE_BAT2_C_NOM         SECTOR_BAT+48
+N
+N
+N
+N#define SECTOR_SPC	  		SECTOR_KOEF+480
+N#define EE_SPC_STAT			SECTOR_SPC
+N#define EE_VZ_CNT			SECTOR_SPC+2
+N#define EE_SPC_BAT			SECTOR_SPC+4
+N#define EE_SPC_PHASE		SECTOR_SPC+6
+N#define EE_SPC_KE_DATE0		SECTOR_SPC+8
+N#define EE_SPC_KE_DATE1		SECTOR_SPC+12
+N#define EE_SPC_VZ_LENGT		SECTOR_SPC+14
+N
+N//#define KOEF_LONG	30
+N
+N#define SECTOR_EXT  		SECTOR_KOEF+500
+N#define EE_TMAX_EXT_EN0		SECTOR_EXT
+N#define EE_TMAX_EXT0		SECTOR_EXT+2
+N#define EE_TMIN_EXT_EN0		SECTOR_EXT+4
+N#define EE_TMIN_EXT0		SECTOR_EXT+6
+N#define EE_T_EXT_REL_EN0		SECTOR_EXT+8
+N#define EE_T_EXT_ZVUK_EN0	SECTOR_EXT+10
+N#define EE_T_EXT_LCD_EN0		SECTOR_EXT+12
+N#define EE_T_EXT_RS_EN0		SECTOR_EXT+14
+N#define EE_TMAX_EXT_EN1		SECTOR_EXT+16
+N#define EE_TMAX_EXT1		SECTOR_EXT+18
+N#define EE_TMIN_EXT_EN1		SECTOR_EXT+20
+N#define EE_TMIN_EXT1		SECTOR_EXT+22
+N#define EE_T_EXT_REL_EN1		SECTOR_EXT+24
+N#define EE_T_EXT_ZVUK_EN1	SECTOR_EXT+26
+N#define EE_T_EXT_LCD_EN1		SECTOR_EXT+28
+N#define EE_T_EXT_RS_EN1		SECTOR_EXT+30
+N#define EE_TMAX_EXT_EN2		SECTOR_EXT+32
+N#define EE_TMAX_EXT2		SECTOR_EXT+34
+N#define EE_TMIN_EXT_EN2		SECTOR_EXT+36
+N#define EE_TMIN_EXT2		SECTOR_EXT+38
+N#define EE_T_EXT_REL_EN2		SECTOR_EXT+40
+N#define EE_T_EXT_ZVUK_EN2	SECTOR_EXT+42
+N#define EE_T_EXT_LCD_EN2		SECTOR_EXT+44
+N#define EE_T_EXT_RS_EN2		SECTOR_EXT+46
+N#define EE_SK_SIGN0			SECTOR_EXT+48
+N#define EE_SK_REL_EN0		SECTOR_EXT+50
+N#define EE_SK_ZVUK_EN0		SECTOR_EXT+52
+N#define EE_SK_LCD_EN0		SECTOR_EXT+54
+N#define EE_SK_RS_EN0		SECTOR_EXT+56
+N#define EE_SK_SIGN1			SECTOR_EXT+58
+N#define EE_SK_REL_EN1		SECTOR_EXT+60
+N#define EE_SK_ZVUK_EN1		SECTOR_EXT+62
+N#define EE_SK_LCD_EN1		SECTOR_EXT+64
+N#define EE_SK_RS_EN1		SECTOR_EXT+66
+N#define EE_SK_SIGN2			SECTOR_EXT+68
+N#define EE_SK_REL_EN2		SECTOR_EXT+70
+N#define EE_SK_ZVUK_EN2		SECTOR_EXT+72
+N#define EE_SK_LCD_EN2		SECTOR_EXT+74
+N#define EE_SK_RS_EN2		SECTOR_EXT+76
+N#define EE_SK_SIGN3			SECTOR_EXT+78
+N#define EE_SK_REL_EN3		SECTOR_EXT+80
+N#define EE_SK_ZVUK_EN3		SECTOR_EXT+82
+N#define EE_SK_LCD_EN3		SECTOR_EXT+84
+N#define EE_SK_RS_EN3		SECTOR_EXT+86
+N#define EE_NUMSK			SECTOR_EXT+88
+N#define EE_NUMDT			SECTOR_EXT+90
+N#define EE_POS_VENT			SECTOR_EXT+92
+N#define EE_POWER_CNT_ADRESS   SECTOR_EXT+94
+N#define EE_UBM_AV             SECTOR_EXT+96
+N#define EE_NUMAVT			SECTOR_EXT+98
+N#define EE_NUMMAKB			SECTOR_EXT+100
+N#define EE_RELE_LOG			SECTOR_EXT+102
+N
+N
+N#define SECTOR_ETH  		SECTOR_EXT+200
+N#define EE_ETH_IS_ON		SECTOR_ETH
+N#define EE_ETH_DHCP_ON		SECTOR_ETH+2
+N#define EE_ETH_IP_1			SECTOR_ETH+4
+N#define EE_ETH_IP_2			SECTOR_ETH+6
+N#define EE_ETH_IP_3			SECTOR_ETH+8
+N#define EE_ETH_IP_4			SECTOR_ETH+10
+N#define EE_ETH_MASK_1		SECTOR_ETH+12
+N#define EE_ETH_MASK_2		SECTOR_ETH+14
+N#define EE_ETH_MASK_3		SECTOR_ETH+16
+N#define EE_ETH_MASK_4		SECTOR_ETH+18
+N#define EE_ETH_TRAP1_IP_1	SECTOR_ETH+20
+N#define EE_ETH_TRAP1_IP_2	SECTOR_ETH+22
+N#define EE_ETH_TRAP1_IP_3	SECTOR_ETH+24
+N#define EE_ETH_TRAP1_IP_4	SECTOR_ETH+26
+N#define EE_ETH_TRAP2_IP_1	SECTOR_ETH+28
+N#define EE_ETH_TRAP2_IP_2	SECTOR_ETH+30
+N#define EE_ETH_TRAP2_IP_3	SECTOR_ETH+32
+N#define EE_ETH_TRAP2_IP_4	SECTOR_ETH+34
+N#define EE_ETH_TRAP3_IP_1	SECTOR_ETH+36
+N#define EE_ETH_TRAP3_IP_2	SECTOR_ETH+38
+N#define EE_ETH_TRAP3_IP_3	SECTOR_ETH+40
+N#define EE_ETH_TRAP3_IP_4	SECTOR_ETH+42
+N#define EE_ETH_TRAP4_IP_1	SECTOR_ETH+44
+N#define EE_ETH_TRAP4_IP_2	SECTOR_ETH+46
+N#define EE_ETH_TRAP4_IP_3	SECTOR_ETH+48
+N#define EE_ETH_TRAP4_IP_4	SECTOR_ETH+50
+N#define EE_ETH_TRAP5_IP_1	SECTOR_ETH+52
+N#define EE_ETH_TRAP5_IP_2	SECTOR_ETH+54
+N#define EE_ETH_TRAP5_IP_3	SECTOR_ETH+56
+N#define EE_ETH_TRAP5_IP_4	SECTOR_ETH+58
+N#define EE_ETH_SNMP_PORT_READ	SECTOR_ETH+60
+N#define EE_ETH_SNMP_PORT_WRITE	SECTOR_ETH+62
+N#define EE_ETH_GW_1			SECTOR_ETH+64
+N#define EE_ETH_GW_2			SECTOR_ETH+66
+N#define EE_ETH_GW_3			SECTOR_ETH+68
+N#define EE_ETH_GW_4			SECTOR_ETH+70
+N#define EE_MODBUS_ADRESS		SECTOR_ETH+72
+N#define EE_MODBUS_BAUDRATE	SECTOR_ETH+74
+N#define EE_BAT_LINK			SECTOR_ETH+76
+N#define EE_I_LOAD_MODE		SECTOR_SETS+78
+N
+N
+N#define SECTOR_LOCATION  	SECTOR_ETH+200
+N#define EE_LOCATION			SECTOR_LOCATION
+N#define SECTOR_COMMUNITY  	SECTOR_ETH+270
+N#define EE_COMMUNITY		SECTOR_COMMUNITY
+N
+N
+N#define KE_PTR			996
+N#define KE_CNT			998
+N#define UNET_AVAR_PTR	1000
+N#define UNET_AVAR_CNT	1002
+N#define SRC1_AVAR_PTR	1004
+N#define SRC1_AVAR_CNT	1006
+N#define SRC2_AVAR_PTR	1008
+N#define SRC2_AVAR_CNT	1010
+N#define BAT_AVAR_PTR	1012
+N#define BAT_AVAR_CNT	1014
+N#define VZ_PTR			1016
+N#define VZ_CNT			1018
+N#define WRK_PTR		1020
+N#define WRK_CNT		1022
+N
+N
+N#define EVENT_LOG	1024 
+N//массив данных журнала событий 32*64=2048
+N// Структура данных журнала событий:
+N// Байт 0 - род устройства:
+N//					'B' - батарея
+N//					'S' - бпсы
+N//					'P' - питающая сеть
+N//					'I' - инверторы
+N//					'U' - УКУ
+N//					'T' - Внешний датчик температуры
+N//					'L' - Внешний логический вход
+N// Байт 1 - порядковый номер устройства(начинается с нуля)
+N// Байт 2 - род события:
+N//					'A' - авария (для питающей сети) 
+N//					'L' - авария связи (для БПСов и инверторов)
+N//					'C' - авария отсутствия(для батареи и БПСов) 
+N//					'U' - авария завышенного напряжения (для БПСов и инверторов) 
+N//					'u' - авария заниженного напряжения (для БПСов и инверторов) 
+N//					'T' - авария по температуре (для БПСов и инверторов) 
+N//					'R' - перезагрузка или включение, только для УКУ
+N// Байт 3 - год возникновения события
+N// Байт 4 - месяц возникновения события
+N// Байт 5 - день возникновения события
+N// Байт 6 - час возникновения события
+N// Байт 7 - минута возникновения события
+N// Байт 8 - секунда возникновения события
+N
+N#define PTR_EVENT_LOG	EVENT_LOG+1024+512+1024 
+N// указатель на события(показывает на последнее записанное) 
+N#define CNT_EVENT_LOG	PTR_EVENT_LOG+2 
+N// колличество событий (не более 64) 
+N// массив данных аварий сети {(8*64)+(2*64)}
+N// Структура данных аварий сети:
+N// при возникновении аварии записывается 
+N// первые 4 байта с полным временем возникновения аварии
+N// другие 4 байта полностью обнуляются, при пропадании аварии  в них записывается
+N// полное время устранения и в 2 байта данных записывается минимальное напряжение 
+N// во время аварии.
+N
+N#define SRC1_AVAR	1664
+N#define SRC1_AVAR_DAT	2176  
+N// массив данных аварий источника №1 {(8*64)+(4*64)}
+N// Структура данных аварий источника №1:
+N// при возникновении аварии записывается 
+N// первые 4 байта с полным временем возникновения аварии
+N// другие 4 байта полностью обнуляются, при пропадании аварии  в них записывается
+N// полное время устранения и в 4 байта данных записывается : 
+N// 1 байт - вид аварии(0x55 - занижено напряжение,
+N//                     0x66 - завышено напряжение,
+N//                     0x77 - перегрев источника)
+N
+N#define SRC2_AVAR	2432
+N#define SRC2_AVAR_DAT	2944  
+N// массив данных аварий источника №1 {(8*64)+(4*64)}
+N// Структура данных аварий источника №1:
+N// при возникновении аварии записывается 
+N// первые 4 байта с полным временем возникновения аварии
+N// другие 4 байта полностью обнуляются, при пропадании аварии  в них записывается
+N// полное время устранения и в 4 байта данных записывается : 
+N// 1 байт - вид аварии(0x55 - занижено напряжение,
+N//                     0x66 - завышено напряжение,
+N//                     0x77 - перегрев источника)
+N
+N#define BAT_AVAR	3200
+N#define BAT_AVAR_DAT	3712  
+N// массив данных аварий батареи {(8*64)+(4*64)}
+N// Структура данных аварий источника №1:
+N// при возникновении аварии записывается 
+N// первые 4 байта с полным временем возникновения аварии
+N// другие 4 байта полностью обнуляются, при пропадании аварии  в них записывается
+N// полное время устранения и в 4 байта данных записывается : 
+N// 1 байт - вид аварии(0x55 - занижено напряжение,
+N//                     0x66 - завышено напряжение,
+N//                     0x77 - перегрев источника)
+N
+N#define VZ	3968
+N#define VZ_L	4224  
+N// массив данных выравнивающих зарядов {(4*64)+(2*64)}
+N// Структура данных ыравнивающих зарядов:
+N// при завершении процесса записывается 
+N// первые 4 байта с полным временем завершения процесса
+N// и в 2 байта данных записывается длительность процесса в часах 
+N
+N#define WRK	4352
+N#define WRK_AH	5376  
+N// массив данных разрядов батареи {(8*128)+(2*128)}
+N// Структура данных разрядов батареи:
+N// при завершении процесса записывается 
+N// первые 4 байта с полным временем начала процесса
+N// затем 4 байта с полным временем завершения процесса
+N// и в 2 байта данных записывается колличество отданных амперчасов 
+N
+N#define KE	5632
+N#define KE_AH	6144  
+N// массив данных разрядов батареи {(8*64)+(2*64)}
+N// Структура данных разрядов батареи:
+N// при завершении процесса записывается 
+N// первые 4 байта с полным временем начала процесса
+N// затем 4 байта с полным временем завершения процесса
+N// и в 2 байта данных записывается колличество отданных амперчасов 
+N
+Nextern const unsigned short ADR_EE_BAT_ZAR_CNT[2];
+Nextern const unsigned short ADR_EE_BAT_ZAR_CNT_KE[2];
+Nextern const unsigned short ADR_EE_BAT_C_NOM[2];
+Nextern const unsigned short ADR_EE_BAT_YEAR_OF_ON[2];
+Nextern const unsigned short ADR_EE_BAT_IS_ON[2];
+Nextern const unsigned short ADR_EE_BAT_DAY_OF_ON[2];
+Nextern const unsigned short ADR_EE_BAT_MONTH_OF_ON[2];
+Nextern const unsigned short ADR_EE_BAT_RESURS[2];
+Nextern const unsigned short ADR_EE_BAT_C_REAL[2];
+Nextern const unsigned short ADR_EE_BAT_TYPE[2];
+Nextern const unsigned short ADR_KUBAT[2];
+Nextern const unsigned short ADR_KUBATM[2];
+Nextern const unsigned short ADR_KI0BAT[2];
+Nextern const unsigned short ADR_KI1BAT[2];
+Nextern const unsigned short ADR_KTBAT[2];
+Nextern const unsigned short ADR_EE_BAT_TYPE[2];
+N
+N
+Nextern const unsigned short ADR_TMAX_EXT_EN[3];
+Nextern const unsigned short ADR_TMAX_EXT[3];
+Nextern const unsigned short ADR_TMIN_EXT_EN[3];
+Nextern const unsigned short ADR_TMIN_EXT[3];
+Nextern const unsigned short ADR_T_EXT_REL_EN[3];
+Nextern const unsigned short ADR_T_EXT_ZVUK_EN[3];
+Nextern const unsigned short ADR_T_EXT_LCD_EN[3];
+Nextern const unsigned short ADR_T_EXT_RS_EN[3];
+N
+Nextern const unsigned short ADR_SK_SIGN[4];
+Nextern const unsigned short ADR_SK_REL_EN[4];
+Nextern const unsigned short ADR_SK_ZVUK_EN[4];
+Nextern const unsigned short ADR_SK_LCD_EN[4];
+Nextern const unsigned short ADR_SK_RS_EN[4];
+N
+Nextern const unsigned short ADR_EE_RELE_SET_MASK[4];
+N
+L 2 "eeprom_map.c" 2
+N
+N
+Nconst unsigned short ADR_EE_BAT_ZAR_CNT[2]={EE_BAT1_ZAR_CNT,EE_BAT2_ZAR_CNT};
+Xconst unsigned short ADR_EE_BAT_ZAR_CNT[2]={0x10+400+12,0x10+400+42};
+Nconst unsigned short ADR_EE_BAT_ZAR_CNT_KE[2]={EE_BAT1_ZAR_CNT_KE,EE_BAT2_ZAR_CNT_KE};
+Xconst unsigned short ADR_EE_BAT_ZAR_CNT_KE[2]={0x10+400+14,0x10+400+44};
+Nconst unsigned short ADR_EE_BAT_C_NOM[2]={EE_BAT1_C_NOM,EE_BAT2_C_NOM};
+Xconst unsigned short ADR_EE_BAT_C_NOM[2]={0x10+400+16,0x10+400+48};
+Nconst unsigned short ADR_EE_BAT_YEAR_OF_ON[2]={EE_BAT1_YEAR_OF_ON,EE_BAT2_YEAR_OF_ON};
+Xconst unsigned short ADR_EE_BAT_YEAR_OF_ON[2]={0x10+400+6,0x10+400+36};
+Nconst unsigned short ADR_EE_BAT_IS_ON[2]={EE_BAT1_IS_ON,EE_BAT2_IS_ON};
+Xconst unsigned short ADR_EE_BAT_IS_ON[2]={0x10+400,0x10+400+30};
+Nconst unsigned short ADR_EE_BAT_DAY_OF_ON[2]={EE_BAT1_DAY_OF_ON,EE_BAT2_DAY_OF_ON};
+Xconst unsigned short ADR_EE_BAT_DAY_OF_ON[2]={0x10+400+2,0x10+400+32};
+Nconst unsigned short ADR_EE_BAT_MONTH_OF_ON[2]={EE_BAT1_MONTH_OF_ON,EE_BAT2_MONTH_OF_ON};
+Xconst unsigned short ADR_EE_BAT_MONTH_OF_ON[2]={0x10+400+4,0x10+400+34};
+Nconst unsigned short ADR_EE_BAT_RESURS[2]={EE_BAT1_RESURS,EE_BAT2_RESURS};
+Xconst unsigned short ADR_EE_BAT_RESURS[2]={0x10+400+10,0x10+400+40};
+Nconst unsigned short ADR_EE_BAT_C_REAL[2]={EE_BAT1_C_REAL,EE_BAT2_C_REAL};
+Xconst unsigned short ADR_EE_BAT_C_REAL[2]={0x10+400+8,0x10+400+38};
+N//const unsigned short ADR_EE_BAT_TYPE[2]={EE_BAT1_TYPE,EE_BAT2_TYPE};
+Nconst unsigned short ADR_KUBAT[2]={EE_KUBAT1,EE_KUBAT2};
+Xconst unsigned short ADR_KUBAT[2]={0x10,0x10+2};
+Nconst unsigned short ADR_KUBATM[2]={EE_KUBATM1,EE_KUBATM2};
+Xconst unsigned short ADR_KUBATM[2]={0x10+28,0x10+30};
+Nconst unsigned short ADR_KI0BAT[2]={EE_KI0BAT1,EE_KI0BAT2};
+Xconst unsigned short ADR_KI0BAT[2]={0x10+4,0x10+6};
+Nconst unsigned short ADR_KI1BAT[2]={EE_KI1BAT1,EE_KI1BAT2};
+Xconst unsigned short ADR_KI1BAT[2]={0x10+8,0x10+10};
+Nconst unsigned short ADR_KTBAT[2]={EE_KTBAT1,EE_KTBAT2};
+Xconst unsigned short ADR_KTBAT[2]={0x10+12,0x10+14};
+N
+N
+Nconst unsigned short ADR_TMAX_EXT_EN[3]={EE_TMAX_EXT_EN0,EE_TMAX_EXT_EN1,EE_TMAX_EXT_EN2};
+Xconst unsigned short ADR_TMAX_EXT_EN[3]={0x10+500,0x10+500+16,0x10+500+32};
+Nconst unsigned short ADR_TMAX_EXT[3]={EE_TMAX_EXT0,EE_TMAX_EXT1,EE_TMAX_EXT2};
+Xconst unsigned short ADR_TMAX_EXT[3]={0x10+500+2,0x10+500+18,0x10+500+34};
+Nconst unsigned short ADR_TMIN_EXT_EN[3]={EE_TMIN_EXT_EN0,EE_TMIN_EXT_EN1,EE_TMIN_EXT_EN2};
+Xconst unsigned short ADR_TMIN_EXT_EN[3]={0x10+500+4,0x10+500+20,0x10+500+36};
+Nconst unsigned short ADR_TMIN_EXT[3]={EE_TMIN_EXT0,EE_TMIN_EXT1,EE_TMIN_EXT2};
+Xconst unsigned short ADR_TMIN_EXT[3]={0x10+500+6,0x10+500+22,0x10+500+38};
+Nconst unsigned short ADR_T_EXT_REL_EN[3]={EE_T_EXT_REL_EN0,EE_T_EXT_REL_EN1,EE_T_EXT_REL_EN2};
+Xconst unsigned short ADR_T_EXT_REL_EN[3]={0x10+500+8,0x10+500+24,0x10+500+40};
+Nconst unsigned short ADR_T_EXT_ZVUK_EN[3]={EE_T_EXT_ZVUK_EN0,EE_T_EXT_ZVUK_EN1,EE_T_EXT_ZVUK_EN2};
+Xconst unsigned short ADR_T_EXT_ZVUK_EN[3]={0x10+500+10,0x10+500+26,0x10+500+42};
+Nconst unsigned short ADR_T_EXT_LCD_EN[3]={EE_T_EXT_LCD_EN0,EE_T_EXT_LCD_EN1,EE_T_EXT_LCD_EN2};
+Xconst unsigned short ADR_T_EXT_LCD_EN[3]={0x10+500+12,0x10+500+28,0x10+500+44};
+Nconst unsigned short ADR_T_EXT_RS_EN[3]={EE_T_EXT_RS_EN0,EE_T_EXT_RS_EN1,EE_T_EXT_RS_EN2};
+Xconst unsigned short ADR_T_EXT_RS_EN[3]={0x10+500+14,0x10+500+30,0x10+500+46};
+N
+Nconst unsigned short ADR_SK_SIGN[4]={EE_SK_SIGN0,EE_SK_SIGN1,EE_SK_SIGN2,EE_SK_SIGN3};
+Xconst unsigned short ADR_SK_SIGN[4]={0x10+500+48,0x10+500+58,0x10+500+68,0x10+500+78};
+Nconst unsigned short ADR_SK_REL_EN[4]={EE_SK_REL_EN0,EE_SK_REL_EN1,EE_SK_REL_EN2,EE_SK_REL_EN3};
+Xconst unsigned short ADR_SK_REL_EN[4]={0x10+500+50,0x10+500+60,0x10+500+70,0x10+500+80};
+Nconst unsigned short ADR_SK_ZVUK_EN[4]={EE_SK_ZVUK_EN0,EE_SK_ZVUK_EN1,EE_SK_ZVUK_EN2,EE_SK_ZVUK_EN3};
+Xconst unsigned short ADR_SK_ZVUK_EN[4]={0x10+500+52,0x10+500+62,0x10+500+72,0x10+500+82};
+Nconst unsigned short ADR_SK_LCD_EN[4]={EE_SK_LCD_EN0,EE_SK_LCD_EN1,EE_SK_LCD_EN2,EE_SK_LCD_EN3};
+Xconst unsigned short ADR_SK_LCD_EN[4]={0x10+500+54,0x10+500+64,0x10+500+74,0x10+500+84};
+Nconst unsigned short ADR_SK_RS_EN[4]={EE_SK_RS_EN0,EE_SK_RS_EN1,EE_SK_RS_EN2,EE_SK_RS_EN3};
+Xconst unsigned short ADR_SK_RS_EN[4]={0x10+500+56,0x10+500+66,0x10+500+76,0x10+500+86};
+N
+Nconst unsigned short ADR_EE_RELE_SET_MASK[4]={EE_RELE_SET_MASK0,EE_RELE_SET_MASK1,EE_RELE_SET_MASK2,EE_RELE_SET_MASK3};
+Xconst unsigned short ADR_EE_RELE_SET_MASK[4]={0x10+100+216,0x10+100+218,0x10+100+220,0x10+100+222};
