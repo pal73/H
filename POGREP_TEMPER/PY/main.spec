@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\H\\POGREP_TEMPER\\PY'],
+             pathex=['E:\\H\\POGREP_TEMPER\\PY'],
              binaries=[],
              datas=[],
              hiddenimports=[],
