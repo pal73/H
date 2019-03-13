@@ -1,0 +1,4 @@
+https://3dtoday.ru/blogs/dagov/smoothieware-configure/
+https://github.com/makerbase-mks/MKS-SBASE/blob/master/English/config/config.txt
+http://smoothieware.org/hbot
+http://smoothieware.org/configuration-options
