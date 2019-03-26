@@ -1,0 +1,12 @@
+control.o: control.c
+control.o: pcf8563.h
+control.o: 25lc640.h
+control.o: control.h
+control.o: mess.h
+control.o: gran.h
+control.o: common_func.h
+control.o: eeprom_map.h
+control.o: avar_hndl.h
+control.o: main.h
+control.o: C:\Keil\ARM\RV31\INC\rtl.h
+control.o: C:\Keil\ARM\INC\Philips\LPC21XX.H

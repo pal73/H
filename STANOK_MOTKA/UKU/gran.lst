@@ -1,0 +1,2229 @@
+L 1 "gran.c"
+N#include "global_define.h"
+L 1 "global_define.h" 1
+N
+N
+N
+N
+N
+N
+L 2 "gran.c" 2
+N#include "gran.h"
+L 1 "gran.h" 1
+N
+Nvoid gran_ring_char(signed char *adr, signed char min, signed char max) ;
+Nvoid gran_char(signed char *adr, signed char min, signed char max);
+Nvoid gran(signed short *adr, signed short min, signed short max);
+Nvoid gran_ring(signed short *adr, signed short min, signed short max);
+Nvoid gran_long(signed long *adr, signed long min, signed long max); 
+L 3 "gran.c" 2
+N#include "main.h"
+L 1 "main.h" 1
+N#include <rtl.h>
+L 1 "C:\Keil\ARM\RV31\INC\rtl.h" 1
+N/*----------------------------------------------------------------------------
+N *      RL-ARM - A P I 
+N *----------------------------------------------------------------------------
+N *      Name:    RTL.H 
+N *      Purpose: Application Programming Interface. 
+N *      Rev.:    V4.13
+N *----------------------------------------------------------------------------
+N *      This code is part of the RealView Run-Time Library.
+N *      Copyright (c) 2004-2010 KEIL - An ARM Company. All rights reserved.
+N *---------------------------------------------------------------------------*/
+N
+N#ifndef __RTL_H__
+N#define __RTL_H__
+N
+N/* RL-ARM version number. */
+N#define __RL_ARM_VER    413
+N 
+N#define __task          __declspec(noreturn)
+N
+N#ifndef NULL
+N #ifdef __cplusplus              // EC++
+S  #define NULL          0
+N #else
+N  #define NULL          ((void *) 0)
+N #endif
+N#endif
+N
+N#ifndef EOF
+N #define EOF            -1
+N#endif
+N
+N#ifndef __size_t
+N #define __size_t       1
+N typedef unsigned int   size_t;
+N#endif
+N
+Ntypedef signed char     S8;
+Ntypedef unsigned char   U8;
+Ntypedef short           S16;
+Ntypedef unsigned short  U16;
+Ntypedef int             S32;
+Ntypedef unsigned int    U32;
+Ntypedef long long       S64;
+Ntypedef unsigned long long U64;
+Ntypedef unsigned char   BIT;
+Ntypedef unsigned int    BOOL;
+N
+N#ifndef __TRUE
+N #define __TRUE         1
+N#endif
+N#ifndef __FALSE
+N #define __FALSE        0
+N#endif
+N
+N#ifdef __BIG_ENDIAN
+S #define U32_LE(v) (__rev(v))
+S #define U16_LE(v) (__rev(v) >> 16) 
+S #define U32_BE(v)       (v)
+S #define U16_BE(v)       (v)
+N#else
+N #define U32_BE(v) (__rev(v))
+N #define U16_BE(v) (__rev(v) >> 16) 
+N #define U32_LE(v)       (v)
+N #define U16_LE(v)       (v)
+N#endif
+N
+N/*----------------------------------------------------------------------------
+N *                             RTX Kernel API
+N *---------------------------------------------------------------------------*/
+N
+N#ifdef __cplusplus               // EC++
+Sextern "C"  {
+N#endif
+N
+N/* Definition of Semaphore type */
+Ntypedef U32 OS_SEM[2];
+N
+N/* Definition of Mailbox type */
+N#define os_mbx_declare(name,cnt)    U32 name [4 + cnt]
+Ntypedef U32 OS_MBX[];
+N
+N/* Definition of Mutex type */
+Ntypedef U32 OS_MUT[3];
+N
+N/* Task Identification number. */
+Ntypedef U32 OS_TID;
+N
+N/* Function return of system calls returning an object identification */
+Ntypedef void *OS_ID;
+N
+N/* Function return of system calls indicating an event or completion state */
+Ntypedef U32 OS_RESULT;
+N
+N/* Return codes */
+N#define OS_R_TMO        0x01
+N#define OS_R_EVT        0x02
+N#define OS_R_SEM        0x03
+N#define OS_R_MBX        0x04
+N#define OS_R_MUT        0x05
+N
+N#define OS_R_OK         0x00
+N#define OS_R_NOK        0xff
+N
+N#define OS_TCB_SIZE     48
+N#define OS_TMR_SIZE     8
+N
+N/* Error Codes */
+N#define OS_ERR_STK_OVF  1
+N#define OS_ERR_FIFO_OVF 2
+N#define OS_ERR_MBX_OVF  3
+N
+N#if !(defined(__TARGET_ARCH_6S_M) || defined(__TARGET_ARCH_7_M) || defined(__TARGET_ARCH_7E_M))
+X#if !(0L || 1L || 0L)
+S
+S/*----------------------------------------------------------------------------
+S *      Functions ARM
+S *---------------------------------------------------------------------------*/
+S
+S/* Task Management */
+S#define os_sys_init(tsk)              os_sys_init0(tsk,0,NULL)
+S#define os_sys_init_prio(tsk,prio)    os_sys_init0(tsk,prio,NULL)
+S#define os_sys_init_user(tsk,prio,stk,size)                                   \
+S                                      os_sys_init0(tsk,prio|(size<<8),stk)
+X#define os_sys_init_user(tsk,prio,stk,size)                                                                         os_sys_init0(tsk,prio|(size<<8),stk)
+S#define os_tsk_create(tsk,prio)       os_tsk_create0(tsk,prio,NULL,NULL)
+S#define os_tsk_create_user(tsk,prio,stk,size)                                 \
+S                                      os_tsk_create0(tsk,prio|(size<<8),stk,NULL)
+X#define os_tsk_create_user(tsk,prio,stk,size)                                                                       os_tsk_create0(tsk,prio|(size<<8),stk,NULL)
+S#define os_tsk_create_ex(tsk,prio,argv) os_tsk_create_ex0(tsk,prio,NULL,argv)
+S#define os_tsk_create_user_ex(tsk,prio,stk,size,argv)                         \
+S                                      os_tsk_create_ex0(tsk,prio|(size<<8),stk,argv)
+X#define os_tsk_create_user_ex(tsk,prio,stk,size,argv)                                                               os_tsk_create_ex0(tsk,prio|(size<<8),stk,argv)
+S#define os_tsk_delete_self()          os_tsk_delete(0)
+S#define os_tsk_prio_self(prio)        os_tsk_prio(0,prio)
+S#define isr_tsk_get()                 os_tsk_self()
+S
+Sextern void      os_sys_init0 (void (*task)(void), U32 prio_stksz, void *stk);
+Sextern OS_TID    os_tsk_create0 (void (*task)(void), U32 prio_stksz, 
+S                                 void *stk, void *argv);
+Sextern OS_TID    os_tsk_create_ex0 (void (*task)(void *), U32 prio_stksz, 
+S                                    void *stk, void *argv);
+Sextern OS_TID    os_tsk_self (void);
+Sextern void      os_tsk_pass (void);
+Sextern OS_RESULT os_tsk_prio (OS_TID task_id, U8 new_prio);
+Sextern OS_RESULT os_tsk_delete (OS_TID task_id);
+S
+S/* Event flag Management */
+S#define os_evt_wait_or(wflags,tmo)      os_evt_wait(wflags,tmo,__FALSE)
+S#define os_evt_wait_and(wflags,tmo)     os_evt_wait(wflags,tmo,__TRUE)
+S
+Sextern OS_RESULT os_evt_wait (U16 wait_flags, U16 timeout, BOOL and_wait);
+Sextern void      os_evt_set (U16 event_flags, OS_TID task_id);
+Sextern void      os_evt_clr (U16 clear_flags, OS_TID task_id);
+Sextern void      isr_evt_set (U16 event_flags, OS_TID task_id);
+Sextern U16       os_evt_get (void);
+S
+S/* Semaphore Management */
+Sextern void      os_sem_init (OS_ID semaphore, U16 token_count);
+Sextern OS_RESULT os_sem_send (OS_ID semaphore);
+Sextern OS_RESULT os_sem_wait (OS_ID semaphore, U16 timeout);
+Sextern void      isr_sem_send (OS_ID semaphore);
+S
+S/* Mailbox Management */
+S#define isr_mbx_check(mbx)              os_mbx_check(mbx)
+S
+Sextern void      os_mbx_init (OS_ID mailbox, U16 mbx_size);
+Sextern OS_RESULT os_mbx_send (OS_ID mailbox, void *message_ptr, U16 timeout);
+Sextern OS_RESULT os_mbx_wait (OS_ID mailbox, void  **message, U16 timeout);
+Sextern OS_RESULT os_mbx_check (OS_ID mailbox);
+Sextern void      isr_mbx_send (OS_ID mailbox, void *message_ptr);
+Sextern OS_RESULT isr_mbx_receive (OS_ID mailbox, void **message);
+S
+S/* Mutex Management */
+Sextern void      os_mut_init (OS_ID mutex);
+Sextern OS_RESULT os_mut_release (OS_ID mutex);
+Sextern OS_RESULT os_mut_wait (OS_ID mutex, U16 timeout);
+S
+S/* Time Management */
+Sextern void      os_dly_wait (U16 delay_time);
+Sextern void      os_itv_set (U16 interval_time);
+Sextern void      os_itv_wait (void);
+S
+S/* User Timer Management */
+Sextern OS_ID     os_tmr_create (U16 tcnt, U16 info);
+Sextern OS_ID     os_tmr_kill (OS_ID timer);
+S
+S/* System Functions */
+Sextern void      tsk_lock (void) __swi (5);
+Sextern void      tsk_unlock (void);
+S
+S/* Fixed Memory Block Management Functions */
+Sextern int       _init_box (void *box_mem, U32 box_size, U32 blk_size);
+Sextern void     *_alloc_box (void *box_mem) __swi (1);
+Sextern void     *_calloc_box (void *box_mem);
+Sextern int       _free_box (void *box_mem, void *box) __swi (2);
+S
+N#else
+N
+N/*----------------------------------------------------------------------------
+N *      Functions Cortex-M
+N *---------------------------------------------------------------------------*/
+N
+N#define __SVC_0         __svc_indirect(0)
+N
+N/* Task Management */
+Nextern void      os_set_env    (void);
+Nextern void      rt_sys_init   (void (*task)(void), U8 priority, void *stk);
+Nextern void      rt_tsk_pass   (void);
+Nextern OS_TID    rt_tsk_self   (void);
+Nextern OS_RESULT rt_tsk_prio   (OS_TID task_id, U8 new_prio);
+Nextern OS_TID    rt_tsk_create (void (*task)(void), U8 priority, void *stk, void *argv);
+Nextern OS_RESULT rt_tsk_delete (OS_TID task_id);
+N
+N#define os_sys_init(tsk)              os_set_env();                           \
+N                                      _os_sys_init((U32)rt_sys_init,tsk,0,NULL)
+X#define os_sys_init(tsk)              os_set_env();                                                                 _os_sys_init((U32)rt_sys_init,tsk,0,NULL)
+N#define os_sys_init_user(tsk,prio,stk,size)                                   \
+N                                      os_set_env();                           \
+N                                      _os_sys_init((U32)rt_sys_init,tsk,prio|(size<<8),stk)
+X#define os_sys_init_user(tsk,prio,stk,size)                                                                         os_set_env();                                                                 _os_sys_init((U32)rt_sys_init,tsk,prio|(size<<8),stk)
+N#define os_sys_init_prio(tsk,prio)    os_set_env();                           \
+N                                      _os_sys_init((U32)rt_sys_init,tsk,prio,NULL)
+X#define os_sys_init_prio(tsk,prio)    os_set_env();                                                                 _os_sys_init((U32)rt_sys_init,tsk,prio,NULL)
+N#define os_tsk_create(tsk,prio)       _os_tsk_create((U32)rt_tsk_create,tsk,prio,NULL,NULL)
+N#define os_tsk_create_user(tsk,prio,stk,size)                                 \
+N                                      _os_tsk_create((U32)rt_tsk_create,tsk,prio|(size<<8),stk,NULL)
+X#define os_tsk_create_user(tsk,prio,stk,size)                                                                       _os_tsk_create((U32)rt_tsk_create,tsk,prio|(size<<8),stk,NULL)
+N#define os_tsk_create_ex(tsk,prio,argv) _os_tsk_create_ex((U32)rt_tsk_create,tsk,prio,NULL,argv)
+N#define os_tsk_create_user_ex(tsk,prio,stk,size,argv)                         \
+N                                      _os_tsk_create_ex((U32)rt_tsk_create,tsk,prio|(size<<8),stk,argv)
+X#define os_tsk_create_user_ex(tsk,prio,stk,size,argv)                                                               _os_tsk_create_ex((U32)rt_tsk_create,tsk,prio|(size<<8),stk,argv)
+N#define os_tsk_self()                 _os_tsk_self((U32)rt_tsk_self)
+N#define os_tsk_pass()                 _os_tsk_pass((U32)rt_tsk_pass)
+N#define os_tsk_prio(task_id,new_prio) _os_tsk_prio((U32)rt_tsk_prio,task_id,new_prio)
+N#define os_tsk_prio_self(prio)        _os_tsk_prio((U32)rt_tsk_prio,0,prio)
+N#define os_tsk_delete(task_id)        _os_tsk_delete((U32)rt_tsk_delete,task_id)
+N#define os_tsk_delete_self()          _os_tsk_delete((U32)rt_tsk_delete, 0)
+N#define isr_tsk_get()                 rt_tsk_self()
+N
+Nextern void      _os_sys_init(U32 p, void (*task)(void), U32 prio_stksz,
+N                                     void *stk)                        __SVC_0;
+X                                     void *stk)                        __svc_indirect(0);
+Nextern OS_TID    _os_tsk_create (U32 p, void (*task)(void), U32 prio_stksz,
+N                                        void *stk, void *argv)         __SVC_0;
+X                                        void *stk, void *argv)         __svc_indirect(0);
+Nextern OS_TID    _os_tsk_create_ex (U32 p, void (*task)(void *), U32 prio_stksz,
+N                                           void *stk, void *argv)      __SVC_0;
+X                                           void *stk, void *argv)      __svc_indirect(0);
+Nextern OS_TID    _os_tsk_self (U32 p)                                  __SVC_0;
+Xextern OS_TID    _os_tsk_self (U32 p)                                  __svc_indirect(0);
+Nextern void      _os_tsk_pass (U32 p)                                  __SVC_0;
+Xextern void      _os_tsk_pass (U32 p)                                  __svc_indirect(0);
+Nextern OS_RESULT _os_tsk_prio (U32 p, OS_TID task_id, U8 new_prio)     __SVC_0;
+Xextern OS_RESULT _os_tsk_prio (U32 p, OS_TID task_id, U8 new_prio)     __svc_indirect(0);
+Nextern OS_RESULT _os_tsk_delete (U32 p, OS_TID task_id)                __SVC_0;
+Xextern OS_RESULT _os_tsk_delete (U32 p, OS_TID task_id)                __svc_indirect(0);
+N
+N/* Event flag Management */
+Nextern OS_RESULT rt_evt_wait (U16 wait_flags,  U16 timeout, BOOL and_wait);
+Nextern void      rt_evt_set  (U16 event_flags, OS_TID task_id);
+Nextern void      rt_evt_clr  (U16 clear_flags, OS_TID task_id);
+Nextern U16       rt_evt_get  (void);
+N
+N#define os_evt_wait_or(wflags,tmo)    _os_evt_wait((U32)rt_evt_wait,wflags,tmo,__FALSE)
+N#define os_evt_wait_and(wflags,tmo)   _os_evt_wait((U32)rt_evt_wait,wflags,tmo,__TRUE)
+N#define os_evt_set(evt_flags,task_id) _os_evt_set((U32)rt_evt_set,evt_flags,task_id)
+N#define os_evt_clr(clr_flags,task_id) _os_evt_clr((U32)rt_evt_clr,clr_flags,task_id)
+N#define os_evt_get()                  _os_evt_get((U32)rt_evt_get)
+N
+Nextern OS_RESULT _os_evt_wait(U32 p, U16 wait_flags, U16 timeout,
+N                                     BOOL and_wait)                    __SVC_0;
+X                                     BOOL and_wait)                    __svc_indirect(0);
+Nextern void      _os_evt_set (U32 p, U16 event_flags, OS_TID task_id)  __SVC_0;
+Xextern void      _os_evt_set (U32 p, U16 event_flags, OS_TID task_id)  __svc_indirect(0);
+Nextern void      _os_evt_clr (U32 p, U16 clear_flags, OS_TID task_id)  __SVC_0;
+Xextern void      _os_evt_clr (U32 p, U16 clear_flags, OS_TID task_id)  __svc_indirect(0);
+Nextern U16       _os_evt_get (U32 p)                                   __SVC_0;
+Xextern U16       _os_evt_get (U32 p)                                   __svc_indirect(0);
+Nextern void      isr_evt_set (U16 event_flags, OS_TID task_id);
+N
+N/* Semaphore Management */
+Nextern void      rt_sem_init (OS_ID semaphore, U16 token_count);
+Nextern OS_RESULT rt_sem_send (OS_ID semaphore);
+Nextern OS_RESULT rt_sem_wait (OS_ID semaphore, U16 timeout);
+N
+N#define os_sem_init(sem,t_count)     _os_sem_init((U32)rt_sem_init,sem,t_count)
+N#define os_sem_send(sem)             _os_sem_send((U32)rt_sem_send,sem)
+N#define os_sem_wait(sem,tmo)         _os_sem_wait((U32)rt_sem_wait,sem,tmo)
+N
+Nextern void      _os_sem_init (U32 p, OS_ID semaphore, 
+N                                      U16 token_count)                 __SVC_0;
+X                                      U16 token_count)                 __svc_indirect(0);
+Nextern OS_RESULT _os_sem_send (U32 p, OS_ID semaphore)                 __SVC_0;
+Xextern OS_RESULT _os_sem_send (U32 p, OS_ID semaphore)                 __svc_indirect(0);
+Nextern OS_RESULT _os_sem_wait (U32 p, OS_ID semaphore, U16 timeout)    __SVC_0;
+Xextern OS_RESULT _os_sem_wait (U32 p, OS_ID semaphore, U16 timeout)    __svc_indirect(0);
+Nextern void      isr_sem_send (OS_ID semaphore);
+N
+N/* Mailbox Management */
+Nextern void      rt_mbx_init  (OS_ID mailbox, U16 mbx_size);
+Nextern OS_RESULT rt_mbx_send  (OS_ID mailbox, void *p_msg,    U16 timeout);
+Nextern OS_RESULT rt_mbx_wait  (OS_ID mailbox, void **message, U16 timeout);
+Nextern OS_RESULT rt_mbx_check (OS_ID mailbox);
+N
+N#define os_mbx_init(mbx,mbx_size)     _os_mbx_init((U32)rt_mbx_init,mbx,mbx_size)
+N#define os_mbx_send(mbx,p_msg,tmo)    _os_mbx_send((U32)rt_mbx_send,mbx,p_msg,tmo)
+N#define os_mbx_wait(mbx,message,tmo)  _os_mbx_wait((U32)rt_mbx_wait,mbx,message,tmo)
+N#define os_mbx_check(mbx)             _os_mbx_check((U32)rt_mbx_check,mbx)
+N#define isr_mbx_check(mbx)            rt_mbx_check(mbx)
+N
+Nextern void      _os_mbx_init (U32 p, OS_ID mailbox, U16 mbx_size)     __SVC_0;
+Xextern void      _os_mbx_init (U32 p, OS_ID mailbox, U16 mbx_size)     __svc_indirect(0);
+Nextern OS_RESULT _os_mbx_send (U32 p, OS_ID mailbox, void *message_ptr,
+N                                      U16 timeout)                     __SVC_0;
+X                                      U16 timeout)                     __svc_indirect(0);
+Nextern OS_RESULT _os_mbx_wait (U32 p, OS_ID mailbox, void  **message,
+N                                      U16 timeout)                     __SVC_0;
+X                                      U16 timeout)                     __svc_indirect(0);
+Nextern OS_RESULT _os_mbx_check (U32 p, OS_ID mailbox)                  __SVC_0;
+Xextern OS_RESULT _os_mbx_check (U32 p, OS_ID mailbox)                  __svc_indirect(0);
+Nextern void      isr_mbx_send (OS_ID mailbox, void *message_ptr);
+Nextern OS_RESULT isr_mbx_receive (OS_ID mailbox, void **message);
+N
+N/* Mutex Management */
+Nextern void      rt_mut_init    (OS_ID mutex);
+Nextern OS_RESULT rt_mut_release (OS_ID mutex);
+Nextern OS_RESULT rt_mut_wait    (OS_ID mutex, U16 timeout);
+N
+N#define os_mut_init(mutex)         _os_mut_init((U32)rt_mut_init,mutex)
+N#define os_mut_release(mutex)      _os_mut_release((U32)rt_mut_release,mutex)
+N#define os_mut_wait(mutex,timeout) _os_mut_wait((U32)rt_mut_wait,mutex,timeout)
+N
+Nextern void      _os_mut_init (U32 p, OS_ID mutex)                     __SVC_0;
+Xextern void      _os_mut_init (U32 p, OS_ID mutex)                     __svc_indirect(0);
+Nextern OS_RESULT _os_mut_release (U32 p, OS_ID mutex)                  __SVC_0;
+Xextern OS_RESULT _os_mut_release (U32 p, OS_ID mutex)                  __svc_indirect(0);
+Nextern OS_RESULT _os_mut_wait (U32 p, OS_ID mutex, U16 timeout)        __SVC_0;
+Xextern OS_RESULT _os_mut_wait (U32 p, OS_ID mutex, U16 timeout)        __svc_indirect(0);
+N
+N/* Time Management */
+Nextern void      rt_dly_wait (U16 delay_time);
+Nextern void      rt_itv_set  (U16 interval_time);
+Nextern void      rt_itv_wait (void);
+N
+N#define os_dly_wait(delay_time)    _os_dly_wait((U32)rt_dly_wait,delay_time)
+N#define os_itv_set(interval_time)  _os_itv_set((U32)rt_itv_set,interval_time)
+N#define os_itv_wait()              _os_itv_wait((U32)rt_itv_wait)
+N
+Nextern void      _os_dly_wait (U32 p, U16 delay_time)                  __SVC_0;
+Xextern void      _os_dly_wait (U32 p, U16 delay_time)                  __svc_indirect(0);
+Nextern void      _os_itv_set (U32 p, U16 interval_time)                __SVC_0;
+Xextern void      _os_itv_set (U32 p, U16 interval_time)                __svc_indirect(0);
+Nextern void      _os_itv_wait (U32 p)                                  __SVC_0;
+Xextern void      _os_itv_wait (U32 p)                                  __svc_indirect(0);
+N
+N/* User Timer Management */
+Nextern OS_ID     rt_tmr_create (U16 tcnt, U16 info);
+Nextern OS_ID     rt_tmr_kill   (OS_ID timer);
+N
+N#define os_tmr_create(tcnt,info)   _os_tmr_create((U32)rt_tmr_create,tcnt,info)
+N#define os_tmr_kill(timer)         _os_tmr_kill((U32)rt_tmr_kill,timer)
+N
+Nextern OS_ID     _os_tmr_create (U32 p, U16 tcnt, U16 info)            __SVC_0;
+Xextern OS_ID     _os_tmr_create (U32 p, U16 tcnt, U16 info)            __svc_indirect(0);
+Nextern OS_ID     _os_tmr_kill (U32 p, OS_ID timer)                     __SVC_0;
+Xextern OS_ID     _os_tmr_kill (U32 p, OS_ID timer)                     __svc_indirect(0);
+N
+N/* System Functions */
+Nextern void      rt_tsk_lock   (void);
+Nextern void      rt_tsk_unlock (void);
+N
+N#define tsk_lock()                 _os_tsk_lock((U32)rt_tsk_lock)
+N#define tsk_unlock()               _os_tsk_unlock((U32)rt_tsk_unlock)
+N
+Nextern void      _os_tsk_lock (U32 p)                                  __SVC_0;
+Xextern void      _os_tsk_lock (U32 p)                                  __svc_indirect(0);
+Nextern void      _os_tsk_unlock (U32 p)                                __SVC_0;
+Xextern void      _os_tsk_unlock (U32 p)                                __svc_indirect(0);
+N
+N/* Fixed Memory Block Management Functions */
+Nextern int       _init_box (void *box_mem, U32 box_size, U32 blk_size);
+Nextern void     *_alloc_box (void *box_mem);
+Nextern void     *_calloc_box (void *box_mem);
+Nextern int       _free_box (void *box_mem, void *box);
+N
+N#endif
+N
+N#define BOX_ALIGN_8     0x80000000
+N#define _declare_box(pool,size,cnt)   U32 pool[(((size)+3)/4)*(cnt) + 3]
+N#define _declare_box8(pool,size,cnt)  U64 pool[(((size)+7)/8)*(cnt) + 2]
+N#define _init_box8(pool,size,bsize)   _init_box (pool,size,bsize | BOX_ALIGN_8)
+N
+N/* For compatibility with older configurations.*/
+N#define os_stk_overflow         os_error
+N
+N/*----------------------------------------------------------------------------
+N *                        Flash File System API
+N *---------------------------------------------------------------------------*/
+N
+Ntypedef struct {                        /* RL Time format (FFS, TCPnet)      */
+N  U8  hr;                               /* Hours    [0..23]                  */
+N  U8  min;                              /* Minutes  [0..59]                  */
+N  U8  sec;                              /* Seconds  [0..59]                  */
+N  U8  day;                              /* Day      [1..31]                  */
+N  U8  mon;                              /* Month    [1..12]                  */
+N  U16 year;                             /* Year     [1980..2107]             */
+N} RL_TIME;
+N
+Ntypedef struct {                        /* Search info record                */
+N  S8  name[256];                        /* Name                              */
+N  U32 size;                             /* File size in bytes                */
+N  U16 fileID;                           /* System Identification             */
+N  U8  attrib;                           /* Attributes                        */
+N  RL_TIME time;                         /* Create/Modify Time                */
+N} FINFO;
+N
+Nextern int finit (void);
+Nextern int fdelete (const char *filename);
+Nextern int frename (const char *oldname, const char *newname);
+Nextern int ffind (const char *pattern, FINFO *info);
+Nextern U64 ffree (const char *drive);
+Nextern int fformat (const char *drive);
+Nextern int fanalyse (const char *drive);
+Nextern int fcheck (const char *drive);
+Nextern int fdefrag (const char *drive);
+N
+N/* The following macros provide for common functions */
+N#define unlink(fn)      fdelete(fn);
+N
+N/*----------------------------------------------------------------------------
+N *                             TCPnet API
+N *---------------------------------------------------------------------------*/
+N
+N/* UDP Options */
+N#define UDP_OPT_SEND_CS    0x01   /* Calculate Checksum for UDP send frames  */
+N#define UDP_OPT_CHK_CS     0x02   /* Verify Checksum for received UDP frames */
+N
+N/* TCP Socket Types */
+N#define TCP_TYPE_SERVER    0x01   /* Socket Type Server (open for listening) */
+N#define TCP_TYPE_CLIENT    0x02   /* Socket Type Client (initiate connect)   */
+N#define TCP_TYPE_DELAY_ACK 0x04   /* Socket Type Delayed Acknowledge         */
+N#define TCP_TYPE_FLOW_CTRL 0x08   /* Socket Type Flow Control                */
+N#define TCP_TYPE_CLIENT_SERVER (TCP_TYPE_SERVER | TCP_TYPE_CLIENT)
+N
+N/* TCP Callback Events */
+N#define TCP_EVT_CONREQ     0      /* Connect request received event          */
+N#define TCP_EVT_CONNECT    1      /* Connection established event            */
+N#define TCP_EVT_CLOSE      2      /* Connection was properly closed          */
+N#define TCP_EVT_ABORT      3      /* Connection is for some reason aborted   */
+N#define TCP_EVT_ACK        4      /* Previously send data acknowledged       */
+N#define TCP_EVT_DATA       5      /* Data received event                     */
+N
+N/* TCP States */
+N#define TCP_STATE_FREE     0      /* Entry is free and unused                */
+N#define TCP_STATE_CLOSED   1      /* Entry allocated, socket still closed    */
+N#define TCP_STATE_LISTEN   2      /* Socket waiting for incoming connection  */
+N#define TCP_STATE_SYN_REC  3      /* SYN frame received                      */
+N#define TCP_STATE_SYN_SENT 4      /* SYN packet sent to establish a connect. */
+N#define TCP_STATE_FINW1    5      /* Tcp_close started FIN packet was sent   */
+N#define TCP_STATE_FINW2    6      /* Our FIN ack-ed, waiting for remote FIN  */
+N#define TCP_STATE_CLOSING  7      /* Received FIN independently of our FIN   */
+N#define TCP_STATE_LAST_ACK 8      /* Waiting for last ACK for our FIN        */
+N#define TCP_STATE_TWAIT    9      /* Timed waiting for 2MSL                  */
+N#define TCP_STATE_CONNECT  10     /* TCP Connection established              */
+N
+N/* DNS Callback Events */
+N#define DNS_EVT_SUCCESS    0      /* Host name successfully resolved         */
+N#define DNS_EVT_NONAME     1      /* DNS Error, no such name                 */
+N#define DNS_EVT_TIMEOUT    2      /* Timeout resolving host                  */
+N#define DNS_EVT_ERROR      3      /* Erroneous response packet               */
+N
+N/* DNS 'get_host_by_name()' result codes */
+N#define DNS_RES_OK         0      /* Function finished OK                    */
+N#define DNS_ERROR_BUSY     1      /* DNS Client busy, can't process request  */
+N#define DNS_ERROR_LABEL    2      /* Host name Label too long                */
+N#define DNS_ERROR_NAME     3      /* Host name loo long                      */
+N#define DNS_ERROR_NOSRV    4      /* Prim. DNS server not specified (0.0.0.0)*/
+N#define DNS_ERROR_UDPSEND  5      /* UDP Send frame error                    */
+N
+N/* SMTP Callback Events */
+N#define SMTP_EVT_SUCCESS   0      /* Email successfully sent                 */
+N#define SMTP_EVT_TIMEOUT   1      /* Timeout sending email                   */
+N#define SMTP_EVT_ERROR     2      /* Error when sending email                */
+N
+N/* ARP Cache Entry types */
+N#define ARP_FIXED_IP       0      /* Fixed IP adrs is refreshed after tout   */
+N#define ARP_TEMP_IP        1      /* Temp adrs is removed after timeout      */
+N
+Nextern void init_TcpNet (void);
+Nextern void main_TcpNet (void);
+Nextern void timer_tick (void);
+Nextern U8   udp_get_socket (U8 tos, U8 opt, 
+N                            U16 (*listener)(U8 socket, U8 *remip, U16 port, U8 *buf, U16 len));
+Nextern BOOL udp_release_socket (U8 socket);
+Nextern BOOL udp_open (U8 socket, U16 locport);
+Nextern BOOL udp_close (U8 socket);
+Nextern BOOL udp_mcast_ttl (U8 socket, U8 ttl);
+Nextern U8  *udp_get_buf (U16 size);
+Nextern BOOL udp_send (U8 socket, U8 *remip, U16 remport, U8 *buf, U16 dlen);
+Nextern U8   tcp_get_socket (U8 type, U8 tos, U16 tout,
+N                            U16 (*listener)(U8 socket, U8 event, U8 *buf, U16 len));
+Nextern BOOL tcp_release_socket (U8 socket);
+Nextern BOOL tcp_listen (U8 socket, U16 locport);
+Nextern BOOL tcp_connect (U8 socket, U8 *remip, U16 remport, U16 locport);
+Nextern U8  *tcp_get_buf (U16 size);
+Nextern U16  tcp_max_dsize (U8 socket);
+Nextern BOOL tcp_check_send (U8 socket);
+Nextern U8   tcp_get_state (U8 socket);
+Nextern BOOL tcp_send (U8 socket, U8 *buf, U16 dlen);
+Nextern BOOL tcp_close (U8 socket);
+Nextern BOOL tcp_abort (U8 socket);
+Nextern void tcp_reset_window (U8 socket);
+Nextern BOOL arp_cache_ip (U8 *ipadr, U8 type);
+Nextern void ppp_listen (char const *user, char const *passw);
+Nextern void ppp_connect (char const *dialnum, char const *user, char const *passw);
+Nextern void ppp_close (void);
+Nextern BOOL ppp_is_up (void);
+Nextern void slip_listen (void);
+Nextern void slip_connect (char const *dialnum);
+Nextern void slip_close (void);
+Nextern BOOL slip_is_up (void);
+Nextern U8   get_host_by_name (U8 *hostn, void (*cbfunc)(U8 event, U8 *host_ip));
+Nextern BOOL smtp_connect (U8 *ipadr, U16 port, void (*cbfunc)(U8 event));
+Nextern void dhcp_disable (void);
+Nextern BOOL igmp_join (U8 *group_ip);
+Nextern BOOL igmp_leave (U8 *group_ip);
+Nextern BOOL snmp_trap (U8 *manager_ip, U8 gen_trap, U8 spec_trap, U16 *obj_list);
+Nextern BOOL snmp_set_community (const char *community);
+N#ifdef __cplusplus               // EC++
+S}
+N#endif
+N
+N/*----------------------------------------------------------------------------
+N * end of file
+N *---------------------------------------------------------------------------*/
+N  
+N#endif
+N 
+L 2 "main.h" 2
+N
+N#ifdef UKU_TELECORE2016
+S#define UKU_TELECORE2015
+S#define UKU2071x
+N#endif
+N
+N#ifdef UKU2071x
+N#define MCP2515_CAN
+N#define SC16IS740_UART
+N//#define can1_out mcp2515_transmit
+N#endif
+N
+N#define SOFT_NUM	1051
+N#define SOFT_DATE	21112UL
+N
+N#define _ACDC_
+N
+N//#define _IPS_	100
+N
+N#define NUM_OF_SET_TABL	2
+N#define DEEP_OF_SET_TABL 19
+N
+N#define CONTROL_BYTE_FOR_XPORT 0
+N
+N#define MINIM_INV_ADRESS	20
+N//-минималный адрес инвертора в кановской сети, не может быть меньше 16
+N#define MAX_NET_ADRESS		31
+N//-максимальный адрес устройства в кановской сети ИБЭПа
+N
+N#define BIN__N(x) (x) | x>>3 | x>>6 | x>>9
+N#define BIN__B(x) (x) & 0xf | (x)>>12 & 0xf0
+N#define BIN8(v) (BIN__B(BIN__N(0x##v)))
+N
+N#ifndef UKU_KONTUR
+N#define OID_ENTERPRISE 	OID0(1,3), 6, 1, 4, 1, 130, 131, 31
+N#endif
+N#ifdef UKU_KONTUR
+S#define OID_ENTERPRISE 	OID0(1,3), 6, 1, 4, 1, 130, 167, 60
+N#endif
+N
+N#ifndef UKU_KONTUR
+N
+N#define OID_DEVICE 		14
+N
+N#define DISPLAY_DEVICE_INFO			1
+N#define DISPLAY_DEVICE_INFO_CODE			1
+N#define DISPLAY_DEVICE_INFO_SERIAL			2
+N#define DISPLAY_DEVICE_INFO_LOCATION 		3
+N#define DISPLAY_DEVICE_INFO_NUMOFBAT 		4
+N#define DISPLAY_DEVICE_INFO_NUMOFBPS 		5
+N#define DISPLAY_DEVICE_INFO_NUMOFINV 		6
+N#define DISPLAY_DEVICE_INFO_NUMOFAVT 		7
+N#define DISPLAY_DEVICE_INFO_NUMOFDT 		8
+N#define DISPLAY_DEVICE_INFO_NUMOFSK 		9
+N#define DISPLAY_DEVICE_INFO_NUMOFEVENTS		10
+N#define DISPLAY_DEVICE_INFO_MODEL_NAME		11
+N
+N#define DISPLAY_MAINS_POWER			2
+N#define DISPLAY_MAINS_POWER_VOLTAGE		1
+N#define DISPLAY_MAINS_POWER_FREQUENCY		2
+N#define DISPLAY_MAINS_POWER_STATUS			3
+N#define DISPLAY_MAINS_POWER_ALARM			4
+N#define DISPLAY_MAINS_POWER_VOLTAGE_PHASEA	5
+N#define DISPLAY_MAINS_POWER_VOLTAGE_PHASEB	6
+N#define DISPLAY_MAINS_POWER_VOLTAGE_PHASEC	7
+N
+N
+N#define DISPLAY_LOAD				3
+N#define DISPLAY_LOAD_VOLTAGE				1
+N#define DISPLAY_LOAD_CURRENT				2
+N
+N#define DISPLAY_PSU					4
+N#define DISPLAY_PSU_ENTRY_NUMBER			1,1
+N#define DISPLAY_PSU_ENTRY_VOLTAGE 			1,2
+N#define DISPLAY_PSU_ENTRY_CURRENT			1,3
+N#define DISPLAY_PSU_ENTRY_TEMPERATURE		1,4
+N#define DISPLAY_PSU_ENTRY_STATUS			1,5
+N#define DISPLAY_PSU_ENTRY_VENTRESURS		1,6
+N
+N#define DISPLAY_BAT					5
+N#define DISPLAY_BAT_NUMBER				1,1
+N#define DISPLAY_BAT_VOLTAGE				1,2
+N#define DISPLAY_BAT_CURRENT				1,3
+N#define DISPLAY_BAT_TEMPERATURE			1,4
+N#define DISPLAY_BAT_CAPACITY				1,5
+N#define DISPLAY_BAT_CHARGE				1,6
+N#define DISPLAY_BAT_STATUS				1,7
+N
+N#define DISPLAY_SPEC				6
+N#define DISPLAY_SPEC_STAT				1
+N#define DISPLAY_SPEC_COMMAND				2
+N
+N#define DISPLAY_SPEC_TRAP_MESSAGE			5
+N#define DISPLAY_SPEC_TRAP_VALUE_0			6
+N#define DISPLAY_SPEC_TRAP_VALUE_1			7
+N#define DISPLAY_SPEC_TRAP_VALUE_2			8
+N
+N
+N#define DISPLAY_INV					14
+N#define DISPLAY_INV_ENTRY_NUMBER			1,1
+N#define DISPLAY_INV_ENTRY_VOLTAGE 			1,2
+N#define DISPLAY_INV_ENTRY_CURRENT			1,3
+N#define DISPLAY_INV_ENTRY_TEMPERATURE		1,4
+N#define DISPLAY_INV_ENTRY_STATUS			1,5
+N
+N#define LCD_SIZE 200
+N
+N#define SNMP_COMMAND				8
+N#define COMMAND_ANSWER					1
+N#define COMMAND_PARAMETR					2
+N
+N#define SYSPARAMS					10
+N#define SYSPARAMSSOUNDALARMEN				1
+N#define SYSPARAMSALARMAUTODISABLE			2
+N#define SYSPARAMS_BAT_TEST_TIME			3
+N#define SYSPARAMS_U_MAX					4
+N#define SYSPARAMS_U_MIN					5
+N#define SYSPARAMS_U_0_GRAD				6
+N#define SYSPARAMS_U_20_GRAD				7 
+N#define SYSPARAMS_U_SIGN					8
+N#define SYSPARAMS_U_MIN_POWER				9
+N#define SYSPARAMS_U_WITHOUT_BAT			10
+N#define SYSPARAMS_IBK					11
+N#define SYSPARAMS_IZMAX					12
+N#define SYSPARAMS_IMAX					13
+N#define SYSPARAMS_IMIN					14
+N#define SYSPARAMS_UVZ					15
+N#define SYSPARAMS_TZAS					16
+N#define SYSPARAMS_TSIGN_BAT				17
+N#define SYSPARAMS_TMAX_BAT				18
+N#define SYSPARAMS_TSIGN_BPS				19
+N#define SYSPARAMS_TMAX_BPS				20	
+N#define SYSPARAMS_BAT_PART_ALARM			21
+N#define SYSPARAMS_POWER_CNT_ADRESS			22	
+N
+N#define DISPLAY_AVT					11
+N#define DISPLAY_AVT_ENTRY_NUMBER			1,1
+N#define DISPLAY_AVT_ENTRY_STAT 			1,2
+N
+N#define DISPLAY_ENERGY				12
+N#define DISPLAY_ENERGY_VVOD_PHASE_A		1
+N#define DISPLAY_ENERGY_VVOD_PHASE_B		2
+N#define DISPLAY_ENERGY_VVOD_PHASE_C		3
+N#define DISPLAY_ENERGY_PES_PHASE_A			4
+N#define DISPLAY_ENERGY_PES_PHASE_B			5
+N#define DISPLAY_ENERGY_PES_PHASE_C			6
+N#define DISPLAY_ENERGY_TOTAL_ENERGY			7
+N#define DISPLAY_ENERGY_CURRENT_ENERGY		8
+N#define DISPLAY_ENERGY_INPUT_VOLTAGE		9
+N
+N
+N#define DISPLAY_SK					15
+N#define DISPLAY_SK_ENTRY_NUMBER			1,1
+N#define DISPLAY_SK_AKTIVITY	 			1,2
+N#define DISPLAY_SK_ALARM_AKTIVITY 			1,3
+N#define DISPLAY_SK_ALARM 	 			1,4
+N
+N#define DISPLAY_DT					17
+N#define DISPLAY_DT_ENTRY_NUMBER			1,1
+N#define DISPLAY_DT_TEMPER	 			1,2
+N#define DISPLAY_DT_ERROR 				1,3
+N
+N#define DISPLAY_MAKB				16
+N#define DISPLAY_MAKB_ENTRY_NUMBER			1,1
+N#define DISPLAY_MAKB_CONNECT_STATUS		1,2
+N#define DISPLAY_MAKB_VOLTAGE0				1,3
+N#define DISPLAY_MAKB_VOLTAGE1				1,4
+N#define DISPLAY_MAKB_VOLTAGE2				1,5
+N#define DISPLAY_MAKB_VOLTAGE3				1,6
+N#define DISPLAY_MAKB_VOLTAGE4				1,7
+N#define DISPLAY_MAKB_TEMPER0				1,8
+N#define DISPLAY_MAKB_TEMPER1				1,9
+N#define DISPLAY_MAKB_TEMPER2				1,10
+N#define DISPLAY_MAKB_TEMPER3				1,11
+N#define DISPLAY_MAKB_TEMPER4				1,12
+N#define DISPLAY_MAKB_TEMPER0_STAT			1,13
+N#define DISPLAY_MAKB_TEMPER1_STAT			1,14
+N#define DISPLAY_MAKB_TEMPER2_STAT			1,15
+N#define DISPLAY_MAKB_TEMPER3_STAT			1,16
+N#define DISPLAY_MAKB_TEMPER4_STAT			1,17
+N
+N#define DISPLAY_LAKB				18
+N#define DISPLAY_LAKB_ENTRY_NUMBER			1,1
+N#define DISPLAY_LAKB_MAX_CELL_VOLTAGE		1,2
+N#define DISPLAY_LAKB_MIN_CELL_VOLTAGE		1,3
+N#define DISPLAY_LAKB_MAX_CELL_TEMPERATURE	1,4
+N#define DISPLAY_LAKB_MIN_CELL_TEMPERATURE	1,5
+N#define DISPLAY_LAKB_VOLTAGE				1,6
+N#define DISPLAY_LAKB_CH_CURR				1,7
+N#define DISPLAY_LAKB_DSCH_CURR				1,8
+N#define DISPLAY_LAKB_RAT_CAP				1,9
+N#define DISPLAY_LAKB_SOH					1,10
+N#define DISPLAY_LAKB_SOC					1,11	
+N#define DISPLAY_LAKB_CCLV					1,12
+N#define DISPLAY_LAKB_RBT					1,13
+N#define DISPLAY_LAKB_FLAGS1					1,14
+N#define DISPLAY_LAKB_FLAGS2					1,15
+N#define DISPLAY_LAKB_CELL_TEMPERATURE_1		1,16
+N#define DISPLAY_LAKB_CELL_TEMPERATURE_2		1,17
+N#define DISPLAY_LAKB_CELL_TEMPERATURE_3		1,18
+N#define DISPLAY_LAKB_CELL_TEMPERATURE_4		1,19
+N#define DISPLAY_LAKB_CELL_TEMPERATURE_AMBIENT	1,20
+N#define DISPLAY_LAKB_CELL_TEMPERATURE_POWER		1,21
+N#define DISPLAY_LAKB_CHARGE_AND_DISCHARGE_CURRENT_ALARM_STATUS		1,22
+N#define DISPLAY_LAKB_BATTERY_TOTAL_VOLTAGE_ALARM_STATUS				1,23
+N#define DISPLAY_LAKB_CUSTOM_ALARM_QUANTITY							1,24
+N#define DISPLAY_LAKB_BALANCED_EVENT_CODE							1,25
+N#define DISPLAY_LAKB_VOLTAGE_EVENT_CODE								1,26
+N#define DISPLAY_LAKB_TEMPERATURE_EVENT_CODE							1,27
+N#define DISPLAY_LAKB_CURRENT_EVENT_CODE								1,28
+N#define DISPLAY_LAKB_FET_STATUS_CODE								1,29
+N#define DISPLAY_LAKB_BALANCED_STATUS_CODE							1,30
+N#define DISPLAY_LAKB_SYSTEM_STATUS_CODE								1,31
+N#define DISPLAY_LAKB_DAMP1				1,32
+N#define DISPLAY_LAKB_DAMP2				1,33
+N#define DISPLAY_LAKB_DAMP3				1,34
+N#define DISPLAY_LAKB_DAMP4				1,35
+N#define DISPLAY_LAKB_DAMP5				1,36
+N
+N#define DISPLAY_KLIMAT				20
+N#define DISPLAY_KLIMAT_WARM_SIGNAL		1
+N#define DISPLAY_KLIMAT_COOL_SIGNAL		2
+N#define DISPLAY_KLIMAT_WARM_ON_TEMPER	3
+N#define DISPLAY_KLIMAT_WARM_OFF_TEMPER	4
+N#define DISPLAY_KLIMAT_WARM_Q			5
+N#define DISPLAY_KLIMAT_COOL_100_TEMPER	6
+N#define DISPLAY_KLIMAT_COOL_80_TEMPER	7
+N#define DISPLAY_KLIMAT_COOL_60_TEMPER	8
+N#define DISPLAY_KLIMAT_COOL_40_TEMPER	9
+N#define DISPLAY_KLIMAT_COOL_20_TEMPER	10
+N#define DISPLAY_KLIMAT_COOL_100_DTEMPER	11
+N#define DISPLAY_KLIMAT_COOL_80_DTEMPER	12
+N#define DISPLAY_KLIMAT_COOL_60_DTEMPER	13
+N#define DISPLAY_KLIMAT_COOL_40_DTEMPER	14
+N#define DISPLAY_KLIMAT_COOL_20_DTEMPER	15
+N#define DISPLAY_KLIMAT_WARM_STAT		16
+N#define DISPLAY_KLIMAT_INT_VENT_PWM_STAT	17
+N#define DISPLAY_KLIMAT_EXT_VENT_PWM_STAT	18	
+N
+N
+N#define COMMAND_OK		0x5555
+N#define COMAND_FAIL		0xaaaa
+N#define COMMAND_INVALID	0xeeee
+N#define WRONG_PARAMETER	0xeeef
+N
+N#define SNMP_BPS_DISABLE		5
+N#define SNMP_BPS_UNDISABLE	8
+N#define SNMP_SPEC_VZ		3
+N#define SNMP_SPEC_KE		4
+N#define SNMP_SPEC_DISABLE	7
+N
+N
+N#define DISPLAY_LOG					9
+N#define DISPLAY_LOG_ENTRY_EVENTS 			1,1
+N//#define DISPLAY_LOG_ENTRY_EVENTS 			1,1
+N
+N#endif
+N
+N
+N
+N
+N#ifdef UKU_KONTUR
+S
+S#define OID_DEVICE 		1,2
+S
+S#define DISPLAY_DEVICE_INFO			1
+S#define DISPLAY_DEVICE_INFO_CODE			1
+S#define DISPLAY_DEVICE_INFO_SERIAL			2
+S#define DISPLAY_DEVICE_INFO_LOCATION 		3
+S#define DISPLAY_DEVICE_INFO_NUMOFBAT 		4
+S#define DISPLAY_DEVICE_INFO_NUMOFBPS 		5
+S#define DISPLAY_DEVICE_INFO_NUMOFINV 		6
+S#define DISPLAY_DEVICE_INFO_NUMOFAVT 		7
+S#define DISPLAY_DEVICE_INFO_NUMOFDT 		8
+S#define DISPLAY_DEVICE_INFO_NUMOFSK 		9
+S#define DISPLAY_DEVICE_INFO_NUMOFEVENTS		10
+S
+S#define DISPLAY_MAINS_POWER			1
+S#define DISPLAY_MAINS_POWER_VOLTAGE		1
+S#define DISPLAY_MAINS_POWER_FREQUENCY		2
+S#define DISPLAY_MAINS_POWER_STATUS			3
+S#define DISPLAY_MAINS_POWER_ALARM			4
+S#define DISPLAY_MAINS_POWER_VOLTAGE_PHASEA	5
+S#define DISPLAY_MAINS_POWER_VOLTAGE_PHASEB	6
+S#define DISPLAY_MAINS_POWER_VOLTAGE_PHASEC	7
+S
+S
+S#define DISPLAY_LOAD				3
+S#define DISPLAY_LOAD_VOLTAGE				1
+S#define DISPLAY_LOAD_CURRENT				2
+S
+S#define DISPLAY_PSU					4
+S#define DISPLAY_PSU_ENTRY_NUMBER			1,1
+S#define DISPLAY_PSU_ENTRY_VOLTAGE 			1,2
+S#define DISPLAY_PSU_ENTRY_CURRENT			1,3
+S#define DISPLAY_PSU_ENTRY_TEMPERATURE		1,4
+S#define DISPLAY_PSU_ENTRY_STATUS			1,5
+S
+S#define DISPLAY_BAT					5
+S#define DISPLAY_BAT_NUMBER				1,1
+S#define DISPLAY_BAT_VOLTAGE				1,2
+S#define DISPLAY_BAT_PART_VOLTAGE			1,3
+S#define DISPLAY_BAT_CURRENT				1,4
+S#define DISPLAY_BAT_TEMPERATURE			1,5
+S#define DISPLAY_BAT_CAPACITY				1,6
+S#define DISPLAY_BAT_CHARGE				1,7
+S#define DISPLAY_BAT_STATUS				1,8
+S
+S#define DISPLAY_SPEC				6
+S#define DISPLAY_SPEC_STAT				1
+S#define DISPLAY_SPEC_COMMAND				2
+S
+S#define DISPLAY_SPEC_TRAP_MESSAGE			5
+S#define DISPLAY_SPEC_TRAP_VALUE_0			6
+S#define DISPLAY_SPEC_TRAP_VALUE_1			7
+S#define DISPLAY_SPEC_TRAP_VALUE_2			8
+S
+S
+S
+S
+S#define LCD_SIZE 200
+S
+S#define SNMP_COMMAND				8
+S#define COMMAND_ANSWER					1
+S#define COMMAND_PARAMETR					2
+S
+S#define SYSPARAMS					10
+S#define SYSPARAMSSOUNDALARMEN				1
+S#define SYSPARAMSALARMAUTODISABLE			2
+S#define SYSPARAMS_BAT_TEST_TIME			3
+S#define SYSPARAMS_U_MAX					4
+S#define SYSPARAMS_U_MIN					5
+S#define SYSPARAMS_U_0_GRAD				6
+S#define SYSPARAMS_U_20_GRAD				7 
+S#define SYSPARAMS_U_SIGN					8
+S#define SYSPARAMS_U_MIN_POWER				9
+S#define SYSPARAMS_U_WITHOUT_BAT			10
+S#define SYSPARAMS_IBK					11
+S#define SYSPARAMS_IZMAX					12
+S#define SYSPARAMS_IMAX					13
+S#define SYSPARAMS_IMIN					14
+S#define SYSPARAMS_UVZ					15
+S#define SYSPARAMS_TZAS					16
+S#define SYSPARAMS_TSIGN_BAT				17
+S#define SYSPARAMS_TMAX_BAT				18
+S#define SYSPARAMS_TSIGN_BPS				19
+S#define SYSPARAMS_TMAX_BPS				20	
+S#define SYSPARAMS_BAT_PART_ALARM			21
+S#define SYSPARAMS_POWER_CNT_ADRESS			22
+S
+S
+S#define DISPLAY_AVT					11
+S#define DISPLAY_AVT_ENTRY_NUMBER			1,1
+S#define DISPLAY_AVT_ENTRY_STAT 			1,2
+S
+S#define DISPLAY_ENERGY				12
+S#define DISPLAY_ENERGY_VVOD_PHASE_A		1
+S#define DISPLAY_ENERGY_VVOD_PHASE_B		2
+S#define DISPLAY_ENERGY_VVOD_PHASE_C		3
+S#define DISPLAY_ENERGY_PES_PHASE_A			4
+S#define DISPLAY_ENERGY_PES_PHASE_B			5
+S#define DISPLAY_ENERGY_PES_PHASE_C			6
+S#define DISPLAY_ENERGY_TOTAL_ENERGY		7
+S#define DISPLAY_ENERGY_CURRENT_ENERGY		8
+S
+S
+S#define DISPLAY_SK					14
+S#define DISPLAY_SK_ENTRY_NUMBER			1,1
+S#define DISPLAY_SK_NAME					1,2
+S#define DISPLAY_SK_AKTIVITY	 			1,3
+S#define DISPLAY_SK_ALARM_AKTIVITY 			1,4
+S#define DISPLAY_SK_ALARM 	 			1,5
+S
+S#define DISPLAY_DT					15
+S#define DISPLAY_DT_EXT					1
+S#define DISPLAY_DT_MSAN	 				2
+S#define DISPLAY_DT_EPU 					3
+S
+S#define DISPLAY_KLIMAT				16
+S#define DISPLAY_KLIMAT_BOX_TEMPER				1
+S#define DISPLAY_KLIMAT_SETTINGS_BOX_ALARM_TEMPER	2
+S#define DISPLAY_KLIMAT_SETTINGS_VENT_ON			3
+S#define DISPLAY_KLIMAT_SETTINGS_VENT_OFF		4
+S#define DISPLAY_KLIMAT_SETTINGS_WARM_ON			5
+S#define DISPLAY_KLIMAT_SETTINGS_WARM_OFF		6
+S#define DISPLAY_KLIMAT_SETTINGS_LOAD_ON			7
+S#define DISPLAY_KLIMAT_SETTINGS_LOAD_OFF		8
+S#define DISPLAY_KLIMAT_SETTINGS_BATT_ON			9
+S#define DISPLAY_KLIMAT_SETTINGS_BATT_OFF		10
+S
+S
+S
+S#define COMMAND_OK		0x5555
+S#define COMAND_FAIL		0xaaaa
+S#define COMMAND_INVALID	0xeeee
+S#define WRONG_PARAMETER	0xeeef
+S
+S#define SNMP_BPS_DISABLE		5
+S#define SNMP_BPS_UNDISABLE	8
+S#define SNMP_SPEC_VZ		3
+S#define SNMP_SPEC_KE		4
+S#define SNMP_SPEC_DISABLE	7
+S
+S
+S#define DISPLAY_LOG					9
+S#define DISPLAY_LOG_ENTRY_EVENTS 			1,1
+S//#define DISPLAY_LOG_ENTRY_EVENTS 			1,1
+N#endif
+N
+N//#define SEC_IN_HOUR	36000L
+N
+N#define LCD_SIZE 200
+N
+N
+N#define MAX_NUM_OF_BAT	2
+N#define MAX_NUM_OF_BPS	12
+N//#define PAROL_ALL_ZERO
+N
+N#define AH_CONSTANT		36000L
+N
+N//***********************************************
+N//Состояние источников
+N
+N
+N
+N
+N#define MASK(lengt) 		(0xffffffff>>(32-lengt))
+N#define MASK_OFFSET(shift,lengt)	(MASK(lengt)<<shift)
+N
+N#define GET_REG( reg, shift, lengt) 		( (reg & MASK_OFFSET(shift,lengt)) >> shift)
+N#define SET_REG( reg, val, shift, lengt)  	reg = ( (reg & ~MASK_OFFSET(shift,lengt)) | (val << shift) )
+N//#define CHK_REG( reg, mask ) ( (reg) & (mask) == (mask) )
+N
+N
+N
+N#define delay_ms(x) {long xx; xx=(unsigned long)x * 12000UL; while(xx)xx--;}
+N#define delay_us(x) {long xx; xx=(unsigned long)x * 12UL; while(xx)xx--;}
+N
+N//*************************************************
+N//сообщения
+N#define MESS_DEEP	10
+N
+N#define 	MESS_ZERO 		0
+N#define 	MESS_BAT1_OFF 		1
+N#define 	MESS_BAT2_OFF		2
+N#define 	MESS_ALL_SRC_OFF	3
+N#define 	MESS_ALL_SRC_ON	4
+N//#define 	MESS_RELSAM_ON		5
+N#define 	MESS_SRC1_OFF		6
+N#define 	MESS_SRC2_OFF		7
+N#define 	MESS_SRC3_OFF		8
+N#define 	MESS_SRC4_OFF		9
+N#define 	MESS_SRC5_OFF		10
+N#define 	MESS_SRC6_OFF		11
+N#define 	MESS_SRC7_OFF		12
+N#define 	MESS_SRC8_OFF		13
+N#define 	MESS_SRC9_OFF		14
+N#define 	MESS_SRC10_OFF		15
+N#define 	MESS_SRC11_OFF		16
+N#define 	MESS_SRC12_OFF		17
+N#define 	MESS_BAT_CONTROL	18
+N#define 	MESS_SRC_CONTROL	19
+N#define 	MESS_LOAD2_WAIT	9 
+N#define 	MESS_PONG			100
+N#define	MESS_SPA_UART_PONG	101 
+N#define	MESS_SPA_BLOK_BPS1	102
+N#define	MESS_SPA_BLOK_BPS2	103
+N#define	MESS_SPA_LEAVE_BPS1	104
+N#define	MESS_SPA_LEAVE_BPS2	105
+N#define 	MESS_SRC_ON_OFF	150
+N#define   _MESS_SRC_MASK_BLOK_2SEC		151
+N#define   _MESS_SRC_MASK_UNBLOK		152
+N#define 	_MESS_SRC_MASK_ON			153
+N#define	_MESS_SRC_PWM				154
+N#define	_MESS_U_NECC				155
+N#define   _MESS_FAST_REG				156
+N//#define   _MESS_U_AVT_GOOD			157
+N
+N#define 	MESS_BAT_ON_OFF	160
+N#define   _MESS_BAT_MASK_BLOK_AFTER_2SEC		161
+N#define	_MESS_BAT_MASK_ON					162
+N#define	_MESS_BAT_MASK_OFF					163
+N
+N		
+N//#define	MESS_SPA_UART_SRAM	200 
+N//#define	MESS_SPA_UART_CMND	201 
+N
+N#define	MESS2UNECC_HNDL   					190
+N#define  		PARAM_UNECC_SET				 	191
+N#define	MESS2BAT_HNDL   					200
+N//#define	MESS2BAT_HNDL1   					201
+N#define		PARAM_BAT_ALL_OFF_AFTER_2SEC			201
+N#define		PARAM_BAT_MASK_OFF_AFTER_2SEC			202
+N//#define		PARAM_BAT_ON						202
+N#define	MESS2BPS_HNDL   					205
+N#define		PARAM_BPS_ALL_OFF_AFTER_2SEC			206
+N#define		PARAM_BPS_MASK_OFF_AFTER_2SEC			207
+N#define		PARAM_BPS_MASK_ON_OFF_AFTER_2SEC		208
+N#define		PARAM_BPS_MASK_ON					209
+N#define		PARAM_BPS_ALL_ON					210
+N#define 	MESS2RELE_HNDL						210
+N#define 	MESS2KLIMAT_CNTRL					211
+N#define		PARAM_RELE_SAMOKALIBR				100
+N#define		PARAM_RELE_AV_1						101
+N#define		PARAM_RELE_AV_2						102
+N#define		PARAM_RELE_AV_3						103
+N#define		PARAM_RELE_LOAD_OFF					103
+N#define		PARAM_RELE_AV_4						104
+N//#define		PARAM_RELE_WARM					104
+N#define		PARAM_RELE_AV_COMM					105
+N#define		PARAM_RELE_AV_BPS					106
+N#define		PARAM_RELE_VENT						107
+N#define		PARAM_RELE_VENT_WARM				107
+N#define		PARAM_RELE_AV_BAT1					108
+N#define		PARAM_RELE_AV_BAT2					109
+N#define		PARAM_RELE_NPN						110
+N#define		PARAM_RELE_WARM				     	111
+N#define 		PARAM_RELE_VVENT				112
+N#define 		PARAM_RELE_EXT					113
+N#define 		PARAM_RELE_BAT_IS_DISCHARGED	114
+N#define		PARAM_KLIMAT_CNTRL_VENT_INT			115
+N#define		PARAM_KLIMAT_CNTRL_VENT_EXT			116
+N
+N#define	MESS2IND_HNDL						215
+N#define		PARAM_SAMOKALIBR					216
+N#define 		PARAM_U_AVT_GOOD					217
+N#define	MESS2MATEMAT						220
+N#define		PARAM_SAMOKALIBR					216
+N#define	MESS2CNTRL_HNDL   					225
+N#define		PARAM_CNTRL_STAT_PLUS				100
+N#define		PARAM_CNTRL_STAT_MINUS				105
+N#define		PARAM_CNTRL_STAT_STEP_DOWN			110
+N#define 		PARAM_CNTRL_STAT_SET		    		229
+N#define 		PARAM_CNTRL_STAT_FAST_REG		    	230	
+N#define	MESS2KB_HNDL   					230
+N#define		PARAM_CNTRL_IS_DOWN					231
+N#define	MESS2VENT_HNDL   					240
+N#define		PARAM_VENT_CB					241
+N
+N#define MESS2NET_DRV							33
+N#define	PARAM_BPS_NET_OFF						34
+N
+N#define LCD_SIZE 200
+N
+N
+N
+N#define BIN__N(x) (x) | x>>3 | x>>6 | x>>9
+N#define BIN__B(x) (x) & 0xf | (x)>>12 & 0xf0
+N#define BIN8(v) (BIN__B(BIN__N(0x##v)))
+N
+N
+N
+N#define BAUD_RATE0 9600UL
+N#define BAUD_RATE1 9600UL
+N
+N
+N
+N
+N
+N#ifndef PAROL_ALL_ZERO
+N#define PAROL_KALIBR 873
+N#define PAROL_SET 184
+N#define PAROL_MODE 0 
+N#define PAROL_ALLER 815 
+N#define PAROL_BAT_IN 722 
+N#define PAROL_BAT_OUT 722
+N#define PAROL_KE 125
+N#define PAROL_VZ 126
+N#define PAROL_TST 999 
+N#define PAROL_DEFAULT 295
+N#define PAROL_AUSW 949
+N#endif                
+N
+N#ifdef PAROL_ALL_ZERO
+S#define PAROL_KALIBR 0
+S#define PAROL_SET 0
+S#define PAROL_MODE 0 
+S#define PAROL_ALLER 0 
+S#define PAROL_BAT_IN 0 
+S#define PAROL_BAT_OUT 0
+S#define PAROL_KE 0
+S#define PAROL_VZ 0
+S#define PAROL_TST 0
+S#define PAROL_DEFAULT 0
+S#define PAROL_AUSW 0
+N#endif
+N
+N
+N#define CNT_SRC_MAX	60
+N
+N
+N
+N//
+N
+N//#define SHIFT_REL_AV_BPS	     4
+N 
+N
+N
+N#ifdef UKU_MGTS
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_AV_COMM	9
+S#define SHIFT_REL_LOAD_OFF	5
+S#define SHIFT_REL_VENT	     7
+S#define SHIFT_REL_LIGHT 	     4
+N#endif
+N
+N#ifdef UKU_RSTKM
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_AV_COMM	9
+S#define SHIFT_REL_LOAD_OFF	5
+S#define SHIFT_REL_VENT	     7
+S#define SHIFT_REL_LIGHT 	     4
+N#endif
+N
+N#ifdef UKU_3U
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_AV_BAT1	4
+S#define SHIFT_REL_AV_BAT2	9
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+N#endif
+N
+N#ifdef UKU_GLONASS
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_AV_BAT1	4
+S#define SHIFT_REL_AV_BAT2	9
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+N#endif
+N
+N#ifdef UKU_KONTUR
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_AV_COMM	9
+S#define SHIFT_REL_LOAD_OFF	5
+S#define SHIFT_REL_VENT	     7
+S#define SHIFT_REL_VENT_WARM   7
+S#define SHIFT_REL_WARM 	     4
+S#define SHIFT_REL_LIGHT 	     4
+N#endif
+N
+N#ifdef UKU_6U
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_AV_BAT1	4
+S#define SHIFT_REL_AV_BAT2	9
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_VENT		5
+N#endif
+N
+N#ifdef UKU_220
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_AV_BAT	4
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_VENT		9
+N#endif
+N
+N#ifdef UKU_220_IPS_TERMOKOMPENSAT
+N#define SHIFT_REL_BAT1	     8
+N#define SHIFT_REL_BAT2	     6
+N#define SHIFT_REL_AV_NET		25
+N#define SHIFT_REL_AV_BPS	     5
+N#define SHIFT_REL_AV_BAT	     4
+N#endif
+N
+N#ifdef UKU_220_V2
+S#define SHIFT_REL_AV_NET		25
+S#define SHIFT_REL_AV_BAT	4
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_VENT		9
+N#endif
+N
+N#ifdef UKU_TELECORE2015
+S#define SHIFT_REL_AV_NET		5
+S#define SHIFT_REL_AV_BAT	4
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_LIGHT		9
+S#define SHIFT_REL_WARM		4
+S#define SHIFT_REL_VENT	     7
+S#define SHIFT_REL_VVENT	     6
+N#endif
+N
+N#ifdef UKU_TELECORE2017
+S#define SHIFT_REL_AV_NET		5
+S#define SHIFT_REL_AV_BAT	4
+S#define SHIFT_REL_AV_BPS	     7
+S#define SHIFT_REL_BAT1	     8
+S#define SHIFT_REL_BAT2	     6
+S#define SHIFT_REL_LIGHT		9
+S#define SHIFT_REL_WARM		4
+S#define SHIFT_REL_VENT	     7
+S#define SHIFT_REL_VVENT	     6
+N#endif
+N
+N//***********************************************
+N//Таймер
+Nextern char b1000Hz,b100Hz,b50Hz,b10Hz,b5Hz,b2Hz,b1Hz;
+Nextern short t0cnt,t0cnt0,t0cnt1,t0cnt2,t0cnt3,t0cnt4,t0cnt5,t0cnt6,t0_cnt7;
+Nextern char bFL5,bFL2,bFL,bFL_;
+Nextern signed short main_10Hz_cnt;
+Nextern signed short main_1Hz_cnt;
+N
+N//***********************************************
+N//Структура ИБЭПа
+Nextern char cnt_of_slave;
+N//char cnt_of_wrks;   //колличество работающих источников , для индикации
+N
+N
+N
+N
+N//***********************************************
+N//Индикация
+Ntypedef enum {
+N	iMn_VD,
+N	iSet_VD,
+N	#ifndef UKU_TELECORE2017
+N	iMn_TELECORE2017,
+N	#endif 
+N	iSrv_sl,iNet,iNet3,iNetEM,
+N	iSet,iSet_220_IPS_TERMOKOMPENSAT,iSet_220_V2,
+N	iInv_set,
+N	iMakb,
+N	iBps,iBps_elteh,iS2,iSet_prl,iK_prl,iDnd,
+N	iK, iK_220_IPS_TERMOKOMPENSAT,iK_220_IPS_TERMOKOMPENSAT_IB,iK_TELECORE,iK_VD,
+N	iSpcprl,iSpc,k,Crash_0,Crash_1,iKednd,iAv_view_avt,iAKE,iSpc_termocompensat,
+N	iLoad,iAVAR,
+N	iStr,iStr_VD,
+N	iVrs,iPrltst,iApv,
+N	iK_bps,iK_bps_sel,iK_bat_ips_termokompensat_ib,iK_bat_TELECORE,iK_bat_sel,iK_bat_sel_TELECORE,iK_load,iK_net,iK_net3,
+N	iK_makb_sel,iK_makb,iK_out,
+N	iTst_220_IPS_TERMOKOMPENSAT,iTst_VD,
+N	iTst_klbr,iTst_BPS1,iTst_BPS2,iTst_BPS12,iDebug,
+N	iDef_220_IPS_TERMOKOMPENSAT,
+N	iSet_st_prl,iK_pdp,iSet_T,
+N	iDeb,
+N	iPrl_bat_in_out,iPrl_bat_in_sel,iPdp1,iJAv_sel,iJAv_net_sel,iJAv_net,iJAv_src1,
+N	iTst_bps,/*iJAv_bat,iJAv_bat_sel,*/iAusw,iAusw_prl,iAusw_set,
+N	iK_t_ext,iK_t_3U,iK_t_ext_6U,
+N	iAv_view,
+N	iBatLogKe,iJ_bat_ke,iBatLogVz,iJ_bat_vz,iBatLogWrk,
+N	iExtern,
+N	iK_power_net,
+N	iExt_set,iExt_set_3U,
+N	iExt_dt,
+N	iExt_sk,iExt_sk_3U,
+N	iExt_ddv,iExt_ddi,iExt_dud,iExt_dp,iSM,iLog,iLog_,iBatLog,iKlimat,iKlimat_kontur,iKlimat_TELECORE,
+N	iEnerg3,iEnerg,
+N	iVent,
+N	iK_power_net3,
+N	iAvt,iLan_set,
+N	iNpn_set,
+N	iBps_list,
+N	iRele_set,iRele_set_,
+N	iAvt_set_sel,iAvt_set,iSet_li_bat,
+N	iOut_volt_contr,iDop_rele_set,iBlok_ips_set,iIps_Curr_Avg_Set}i_enum;
+N
+Ntypedef struct  
+N{
+N
+Ni_enum i;
+Nsigned char s_i;
+Nsigned char s_i1;
+Nsigned char s_i2;
+Nsigned char i_s;
+N} stuct_ind;
+N
+N#define ind     a_ind.i
+N#define sub_ind     a_ind.s_i
+N#define sub_ind1     a_ind.s_i1
+N#define sub_ind2     a_ind.s_i2
+N#define index_set     a_ind.i_s
+N
+Nextern stuct_ind a_ind,b_ind[10],c_ind;
+Nextern signed short ptr_ind;
+Nextern char lcd_buffer[LCD_SIZE+100];
+Xextern char lcd_buffer[200+100];
+Nextern signed char parol[3];
+Nextern char phase;
+Nextern char lcd_bitmap[1024];
+Nextern char dig[5];
+Nextern signed short ind_pointer;
+Nextern char zero_on;
+Nextern char mnemo_cnt;
+Nextern char simax;
+Nextern short av_j_si_max;
+Nextern const char ABCDEF[];
+Nextern const char sm_mont[13][4]; 
+N
+N
+N//**********************************************
+N//Коэффициенты, отображаемые из EEPROM
+Nextern signed short Ktsrc[2];
+Nextern signed short Kusrc[2];
+Nextern signed short Kisrc[2];
+Nextern signed short Ki0src[2];
+Nextern signed short Kubat[2];
+Nextern signed short Kubatm[2];
+Nextern unsigned short Kibat0[2];
+Nextern signed short Kibat1[2];
+Nextern signed short Ktbat[2];
+Nextern signed short Kunet;
+Nextern signed short Ktext[3];
+Nextern signed short Kuload;
+Nextern signed short Kunet_ext[3];
+Nextern signed short KunetA;
+Nextern signed short KunetB;
+Nextern signed short KunetC;
+Nextern signed short Kubps;
+Nextern signed short Kuout;
+Nextern signed short Kuvd;
+N
+Nextern signed short MAIN_IST;
+Nextern signed short UMAX;
+Nextern signed short UOUT;
+Nextern signed short UOUT_;
+Nextern signed short UAVT;
+Nextern signed short TMAX;
+Nextern signed short TSIGN;
+Nextern signed short TSYSMAX;
+Nextern signed short AV_OFF_AVT;
+Nextern signed short USIGN;
+Nextern signed short UMN;
+Nextern signed short ZV_ON;
+Nextern signed short UINMAX;
+Nextern signed short UINMIN;
+Nextern signed short UOUTMAX;
+Nextern signed short UOUTMIN;
+Nextern signed short IKB;
+N
+Nextern signed short IMAX;
+Nextern signed short IMIN;
+Nextern signed short APV_ON;
+Nextern signed short IZMAX;
+Nextern signed short U0B;
+Nextern signed short TZAS;
+Nextern signed short VZ_HR;
+Nextern signed short TBAT;
+Nextern signed short U_AVT;
+Nextern signed short DU;
+N
+Nextern signed short RELE_SET_MASK[4];
+N
+Nextern signed short TBATMAX;
+Nextern signed short TBATSIGN;
+Nextern signed short UBM_AV;
+Nextern signed short RELE_LOG;
+Nextern signed short TBOXMAX;
+Nextern signed short TBOXREG;
+Nextern signed short TBOXVENTMAX;
+Nextern signed short TLOADDISABLE;
+Nextern signed short TLOADENABLE;
+Nextern signed short TBATDISABLE;
+Nextern signed short TBATENABLE;
+Nextern signed short TBOXMAX;
+Nextern signed short TBOXREG;
+Nextern signed short TBOXVENTMAX;
+Nextern signed short TLOADDISABLE;
+Nextern signed short TLOADENABLE;
+Nextern signed short TBATDISABLE;
+Nextern signed short TBATENABLE;
+Nextern signed short TVENTON;
+Nextern signed short TVENTOFF;
+Nextern signed short TWARMON;
+Nextern signed short TWARMOFF;
+Ntypedef enum {rvsAKB=0,rvsEXT,rvsBPS} enum_releventsign;
+Nextern enum_releventsign RELEVENTSIGN;
+Nextern signed short TZNPN;
+Nextern signed short UONPN;
+Nextern signed short UVNPN;
+Ntypedef enum {npnoOFF=0,npnoRELEVENT,npnoRELEAVBAT2} enum_npn_out;
+Nextern enum_npn_out NPN_OUT;
+Ntypedef enum {npnsULOAD=0,npnsAVNET} enum_npn_sign;
+Nextern enum_npn_sign NPN_SIGN;
+Nextern signed short TERMOKOMPENS;
+Nextern signed short TBOXVENTON; 
+Nextern signed short TBOXVENTOFF;
+Nextern signed short TBOXWARMON; 
+Nextern signed short TBOXWARMOFF;
+Nextern signed short BAT_TYPE;	//Тип батареи. 0 - обычная свинцовая, 1-литиевая COSLIGHT, 2-литиевая SACRED SUN , 3-литиевая ZTT
+Nextern signed short DU_LI_BAT;	//Параметр, определяющий напряжение содержания литиевой батареи
+Nextern signed short FORVARDBPSCHHOUR;	//Периодичностьсмены ведущего источника в часах. Если 0 - функция выключена и ведущий первый источник
+Nextern signed short NUMBAT;
+Nextern signed short NUMBAT_TELECORE;
+Nextern signed short NUMIST;
+Nextern signed short NUMINV;
+Nextern signed short NUMDT;
+Nextern signed short NUMSK;
+Nextern signed short NUMEXT;
+Nextern signed short NUMAVT;
+Nextern signed short NUMMAKB;
+Nextern signed short NUMBYPASS;
+Nextern signed short U_OUT_KONTR_MAX;
+Nextern signed short U_OUT_KONTR_MIN;
+Nextern signed short U_OUT_KONTR_DELAY;
+Nextern signed short DOP_RELE_FUNC;
+Nextern signed short CNTRL_HNDL_TIME;	//Постоянная времени регулирования источников для Телекора
+Nextern signed short USODERG_LI_BAT;		//Напряжение содержания литиевой батареи
+Nextern signed short QSODERG_LI_BAT;		//Заряд при котором начинает действовать напряжение содержания литиевой батареи
+Nextern signed short TVENTMAX;			//Максимальный ресурс вентилятора
+Nextern signed short ICA_EN;				//Включенность режима выравнивания токов ИПС
+Nextern signed short ICA_CH;				//Канал связи для выравнивания токов, 0 - MODBUS, 1 - MODBUS-TCP
+Nextern signed short ICA_MODBUS_ADDRESS;//Адрес ведомого для выравнивания токов по шине MODBUS-RTU
+Nextern signed short ICA_MODBUS_TCP_IP1,ICA_MODBUS_TCP_IP2,ICA_MODBUS_TCP_IP3,ICA_MODBUS_TCP_IP4;	//IP ведомого для выравнивания токов по шине MODBUS-TCP
+Nextern signed short ICA_MODBUS_TCP_UNIT_ID;	//UNIT ID ведомого для выравнивания токов по шине MODBUS-TCP
+Nextern signed short PWM_START;			//Начальный шим для ЭЛТЕХа
+Nextern signed short KB_ALGORITM;		//2-х или 3-х ступеннчатый алгоритм проверки цепи батареи
+Nextern signed short REG_SPEED;			//скорость регулирования, 1- стандартная, 2,3,4,5- замедленная в 2,3,4,5 раз
+N
+Ntypedef enum {apvON=0x01,apvOFF=0x00}enum_apv_on;
+Nextern enum_apv_on APV_ON1,APV_ON2;
+N
+Nextern signed short APV_ON2_TIME;
+N
+Ntypedef enum {bisON=0x0055,bisOFF=0x00aa}enum_bat_is_on;
+Nextern enum_bat_is_on BAT_IS_ON[2];
+N
+Nextern signed short BAT_DAY_OF_ON[2];
+Nextern signed short BAT_MONTH_OF_ON[2];
+Nextern signed short BAT_YEAR_OF_ON[2];
+Nextern signed short BAT_C_NOM[2];
+Nextern signed short BAT_RESURS[2];
+Nextern signed short BAT_C_REAL[2];
+N//extern signed short BAT_TYPE[2];
+N
+Nextern unsigned short AUSW_MAIN;
+Nextern unsigned long 	AUSW_MAIN_NUMBER;
+Nextern unsigned short AUSW_DAY;
+Nextern unsigned short AUSW_MONTH;
+Nextern unsigned short AUSW_YEAR;
+Nextern unsigned short AUSW_UKU;
+Nextern unsigned short AUSW_UKU_SUB;
+Nextern unsigned long AUSW_UKU_NUMBER;
+Nextern unsigned long	AUSW_BPS1_NUMBER;
+Nextern unsigned long  AUSW_BPS2_NUMBER;
+Nextern unsigned short AUSW_RS232;
+Nextern unsigned short AUSW_PDH;
+Nextern unsigned short AUSW_SDH;
+Nextern unsigned short AUSW_ETH;
+N
+Nextern signed short TMAX_EXT_EN[3];
+Nextern signed short TMAX_EXT[3];
+Nextern signed short TMIN_EXT_EN[3];
+Nextern signed short TMIN_EXT[3];
+Nextern signed short T_EXT_REL_EN[3];
+Nextern signed short T_EXT_ZVUK_EN[3];
+Nextern signed short T_EXT_LCD_EN[3];
+Nextern signed short T_EXT_RS_EN[3];
+N
+Nextern signed short SK_SIGN[4];
+Nextern signed short SK_REL_EN[4];
+Nextern signed short SK_ZVUK_EN[4];
+Nextern signed short SK_LCD_EN[4];
+Nextern signed short SK_RS_EN[4];
+N
+Ntypedef enum {AVZ_1=1,AVZ_2=2,AVZ_3=3,AVZ_6=6,AVZ_12=12,AVZ_OFF=0}enum_avz;
+Nextern enum_avz AVZ;
+N
+Nextern unsigned short HOUR_AVZ;
+Nextern unsigned short MIN_AVZ;
+Nextern unsigned short SEC_AVZ;
+Nextern unsigned short DATE_AVZ;
+Nextern unsigned short MONTH_AVZ;
+Nextern unsigned short YEAR_AVZ;
+Nextern unsigned short AVZ_TIME;
+Ntypedef enum {mnON=0x55,mnOFF=0xAA}enum_mnemo_on;
+Nextern enum_mnemo_on MNEMO_ON;
+Nextern unsigned short MNEMO_TIME;
+Nextern signed short POWER_CNT_ADRESS;
+N
+Nextern signed short ETH_IS_ON;
+Nextern signed short ETH_DHCP_ON;
+Nextern signed short ETH_IP_1;
+Nextern signed short ETH_IP_2;
+Nextern signed short ETH_IP_3;
+Nextern signed short ETH_IP_4;
+Nextern signed short ETH_MASK_1;
+Nextern signed short ETH_MASK_2;
+Nextern signed short ETH_MASK_3;
+Nextern signed short ETH_MASK_4;
+Nextern signed short ETH_TRAP1_IP_1;
+Nextern signed short ETH_TRAP1_IP_2;
+Nextern signed short ETH_TRAP1_IP_3;
+Nextern signed short ETH_TRAP1_IP_4;
+Nextern signed short ETH_TRAP2_IP_1;
+Nextern signed short ETH_TRAP2_IP_2;
+Nextern signed short ETH_TRAP2_IP_3;
+Nextern signed short ETH_TRAP2_IP_4;
+Nextern signed short ETH_TRAP3_IP_1;
+Nextern signed short ETH_TRAP3_IP_2;
+Nextern signed short ETH_TRAP3_IP_3;
+Nextern signed short ETH_TRAP3_IP_4;
+Nextern signed short ETH_TRAP4_IP_1;
+Nextern signed short ETH_TRAP4_IP_2;
+Nextern signed short ETH_TRAP4_IP_3;
+Nextern signed short ETH_TRAP4_IP_4;
+Nextern signed short ETH_TRAP5_IP_1;
+Nextern signed short ETH_TRAP5_IP_2;
+Nextern signed short ETH_TRAP5_IP_3;
+Nextern signed short ETH_TRAP5_IP_4;
+Nextern signed short ETH_SNMP_PORT_READ;
+Nextern signed short ETH_SNMP_PORT_WRITE;
+Nextern signed short ETH_GW_1;
+Nextern signed short ETH_GW_2;
+Nextern signed short ETH_GW_3;
+Nextern signed short ETH_GW_4;
+N
+Nextern signed short RELE_VENT_LOGIC;
+N
+Nextern signed short MODBUS_ADRESS;
+Nextern signed short MODBUS_BAUDRATE;
+Nextern signed short BAT_LINK;
+Nextern signed short I_LOAD_MODE;		//способ измерения выходного тока - по шунту или как сумму токов источников
+N
+N
+N//***********************************************
+N//Состояние батарей
+Ntypedef struct
+N     {
+N	char 		_cnt_to_block;
+N	signed short	_Ub;
+N     signed short	_Ubm;
+N     signed short	_dUbm;
+N	signed short	_Ib;
+N	signed short	_Tb;
+N	char 		_nd;
+N	char 		_cnt_wrk;
+N	char 		_wrk;
+N	unsigned short _zar;
+N	char 		_full_ver;
+N	signed long 	_zar_cnt;
+N	signed long 	_zar_cnt_ke;
+N	unsigned short _Iintegr,_Iintegr_; 
+N	signed short 	_u_old[8];
+N	signed short	_u_old_cnt;
+N	unsigned long 	_wrk_date[2];
+N	char 		_rel_stat;
+N	char			_av;
+N	char			_time_cnt;
+N	char 		_temper_stat;
+N	//0бит - подогрев
+N	//1бит - перегрев
+N	signed short 	_sign_temper_cnt;
+N	signed short 	_max_temper_cnt;
+N	signed long 	_resurs_cnt;
+N	signed short 	_cnt_as; 	//счетчик несимметрии, считает до 5 минут при выполнении условий несимметрии, когда досчитывает - пишет в журнал
+N     //signed short   _max_cell_volt;
+N	//signed short   _min_cell_volt;
+N	} BAT_STAT; 
+Nextern BAT_STAT bat[2],bat_ips;
+Nextern signed short		bat_u_old_cnt;
+Nextern signed short 	Ib_ips_termokompensat;
+N
+N//#ifdef UKU_TELECORE2015
+Ntypedef enum {bsOFF=0,bsCOMM_ON,bsOK} enum_batStat;
+N//***********************************************
+N//Состояние литиевой батареи
+Ntypedef struct
+N     {
+N	//char 		_cnt_to_block;
+N	signed short	_Ub;
+N     //signed short	_Ubm;
+N     //signed short	_dUbm;
+N	signed short	_Ib;
+N	signed short	_Tb;
+N	char 		_nd;
+N	char   		_soh;
+N	char 		_soc;
+N	signed short   _ratCap;
+N	char 		_comErrStat;	//Состояние связи с батареей: 1-ошибка, 0-связь в норме
+N	enum_batStat	_batStat;
+N	signed short 	_cclv;
+N	char 		_rbt;
+N	short 		_canErrorCnt;
+N	char			_canError;
+N	char 		_485Error;
+N	short 		_485ErrorCnt;
+N	//char 		_full_ver;
+N	//signed long 	_zar_cnt;
+N	//signed long 	_zar_cnt_ke;
+N	//unsigned short _Iintegr,_Iintegr_; 
+N	//signed short 	_u_old[8];
+N	//signed short	_u_old_cnt;
+N	//unsigned long 	_wrk_date[2];
+N	//char 		_rel_stat;
+N	//char			_av;
+N	//char			_time_cnt;
+N	//char 		_temper_stat;
+N	//0бит - подогрев
+N	//1бит - перегрев
+N	//signed short 	_sign_temper_cnt;
+N	//signed short 	_max_temper_cnt;
+N	//signed long 	_resurs_cnt;
+N	//signed short 	_cnt_as; 	//счетчик несимметрии, считает до 5 минут при выполнении условий несимметрии, когда досчитывает - пишет в журнал
+N     //signed short   _max_cell_volt;
+N	//signed short   _min_cell_volt;
+N	} LI_BAT_STAT; 
+Nextern LI_BAT_STAT li_bat;
+N//#endif
+N//***********************************************
+N//Состояние байпаса
+Ntypedef struct
+N     {
+N	signed short 	_Iout;
+N	signed short 	_Uout;
+N	signed short 	_Pout;
+N	signed short 	_Unet; 	
+N	signed short 	_Uin;
+N	char			_T;
+N	char 		_flags;
+N	char			_cnt;
+N	char 		_adress;
+N	} BYPS_STAT; 
+Nextern BYPS_STAT byps;
+N
+N//***********************************************
+N//Мониторы АКБ
+Ntypedef struct
+N     {
+N	signed short	_U[5];
+N	signed short	_Ub[5];
+N	signed short	_T[5];
+N	signed short	_T_nd[5];
+N	signed short 	_cnt; 	
+N	} MAKB_STAT; 
+Nextern MAKB_STAT makb[4];
+N
+N//***********************************************
+N//Литиевые АКБ
+Ntypedef struct
+N     {
+N	signed short	_max_cell_volt;
+N	signed short	_min_cell_volt;
+N	signed short	_max_cell_temp;
+N	signed short	_min_cell_temp;
+N	signed short	_tot_bat_volt;
+N	signed short	_ch_curr;
+N	signed short	_dsch_curr;
+N	signed short	_rat_cap;
+N	signed short	_s_o_h;
+N	signed short	_s_o_c;
+N	signed short	_c_c_l_v;
+N	signed short	_r_b_t;
+N	signed short	_b_p_ser_num;
+N	signed short   _flags1;
+N	signed short 	_flags2;
+N	signed short 	_communication2lvlErrorStat; 	//флаг аварийности низовой связи с батареей, вычисляется в плате расширения
+N	signed short	_communication2lvlErrorCnt;  	//счетчик аварийности низовой связи с батареей
+N	signed short 	_cnt;
+N	signed short 	_communicationFullErrorStat;	//флаг аварийности всего канала связи с батареей, 0 - норма, 1 - отсутствует связь с промежуточной платой, 2 - отсутствует связь промежуточной платы и батареи  	
+N	signed short   _battIsOn;		//0 - отсутствует, 1 - присутствует
+N	char 		_plazma[8];		//переменные для отладки
+N	signed short 	_isOnCnt;
+N	signed short	_s_o_c_abs;		//остаточный заряд в абсолютном выражении
+N	signed short 	_s_o_c_percent; //остаточный заряд в процентном выражении
+N	signed short	_plazma_ss;
+N	signed short	_zar_percent;	//заряд батареи в процетах
+N	signed char		_cell_temp_1;	//температура 1-го датчика батареи(ZTT)
+N	signed char		_cell_temp_2;	//температура 2-го датчика батареи(ZTT)
+N	signed char		_cell_temp_3;	//температура 3-го датчика батареи(ZTT)
+N	signed char		_cell_temp_4;	//температура 4-го датчика батареи(ZTT)
+N	signed char		_cell_temp_ambient;	//температура датчика окружающей среды батареи(ZTT)
+N	signed char		_cell_temp_power;	//температура датчика силовой части батареи(ZTT)
+N	//signed char 	_pack_volt_state;	//статус аварии по напряжениям батареи(ZTT)
+N	//signed char 	_pack_temper_state;	//статус аварии по температурам батареи(ZTT)
+N	//signed char 	_pack_alarm_state;	//статус аварий батареи(ZTT)
+N	signed char		_charge_and_discharge_current_alarm_status;	 	//(ZTT)
+N	signed char 	_battery_total_voltage_alarm_status;			//(ZTT)
+N	signed char		_custom_alarm_quantity;							//(ZTT)
+N	signed char		_balanced_event_code;							//(ZTT)
+N	signed char 	_voltage_event_code;							//(ZTT)
+N	signed char 	_temperature_event_code;						//(ZTT)
+N	signed char		_current_event_code;							//(ZTT)
+N	signed char		_fet_status_code;								//(ZTT)
+N	signed short	_balanced_status_code;							//(ZTT)
+N	signed char 	_system_status_code;							//(ZTT)
+N
+N	} LAKB_STAT; 
+Nextern LAKB_STAT lakb[3];
+Nextern char lakb_damp[1][42];
+Nextern char bLAKB_KONF_CH;
+Nextern char bLAKB_KONF_CH_old;
+Nextern char lakb_ison_mass[7];
+Nextern short lakb_mn_ind_cnt;
+Nextern char bLAKB_KONF_CH_EN;
+Nextern char bRS485ERR;
+Nextern short LBAT_STRUKT;
+Nextern char lakb_error_cnt;	//счетчик неправильного показания ннапряжения батареи
+Nextern short numOfPacks,numOfPacks_;
+Nextern short numOfCells, numOfTemperCells, baseOfData;
+Nextern short lakb_stat_comm_error;	//аварийность канала связи с литиевыми батареями. 0 означает исправность платы расширения и наличие связи со всеми литиевыми батареями
+Nextern short lakbNotErrorNum;		//колличество литиевых батарей с исправной связью
+Nextern short lakbKanErrorCnt;		//Счетчик аварийности канала связи с платой расширения
+Nextern short lakbKanErrorStat;		//Состояние аварийности канала связи с платой расширения
+N
+N
+N
+N//***********************************************
+N//Телеметрия по внутренней шине
+Nextern char can_slot[12][16];
+Nextern char plazma_can_inv[3];
+N
+N//***********************************************
+N//Состояние источников
+N
+N
+Ntypedef struct
+N    {
+N    enum {dSRC=3,dINV=5,dNET_METR=7,dIBAT_METR=9,dMAKB=11}_device;
+N	char _av;
+N	//0бит - авария по перегреву
+N	//1бит - авария по завышенному Uвых
+N	//2бит - авария по заниженному Uвых
+N	//3бит - авария по обрыву связи	
+N	//4бит - ресурс вентилятора выработан    
+N 	enum {bsOFF_AV_NET,bsAPV,bsWRK,bsRDY,bsBL,bsAV}_state;
+N    char _cnt;
+N     char _cnt_old;
+N     char _cnt_more2;
+N     char _buff[20]; 
+N     //char _av_net;
+N     //char _av_u_max;
+N     //char _av_u_min;
+N     //char _av_temper; 
+N     signed _Uii; 
+N     signed _Uin;
+N     signed _Ii;
+N     signed _Ti; 
+N     char _flags_tu;
+N	 signed _Uisum;
+N     //char _flags_tu_old;
+N     //char _is_ready;
+N     //char _is_wrk;
+N     //char _is_link;
+N     //char _is_av;
+N     signed _vol_u;
+N     signed _vol_i;
+N     char _is_on_cnt;
+N     //int _ist_blok_host_cnt_; //блокирование источников извне(CAN или RS), если не 0 то источник заблокирован.
+N     int _ist_blok_host_cnt;
+N     short _blok_cnt; //блокирование источников 
+N     char _flags_tm;
+N	signed short _overload_av_cnt;     
+N     signed short _temp_av_cnt;
+N     signed short _umax_av_cnt;
+N     signed short _umin_av_cnt;
+N     signed _rotor;
+N     signed  short _x_; 
+N     char _adr_ee;
+N	char _last_avar;
+N	char _vent_resurs_temp[4];
+N	unsigned short _vent_resurs;
+N	signed short debug_info_to_uku0;
+N	signed short debug_info_to_uku1;
+N	signed short _avg;
+N	signed short _cntrl_stat;
+N     } BPS_STAT; 
+Nextern BPS_STAT bps[29];
+N
+N//***********************************************
+N//Состояние инверторов
+Ntypedef struct
+N     {
+N	char _av;
+N	//0бит - авария по перегреву
+N	//1бит - авария по завышенному Uвых
+N	//2бит - авария по заниженному Uвых
+N	//3бит - авария по обрыву связи	    
+N     enum {isAPV,isWRK,isRDY,isBL,isAV,isOFF_AV_NET}_state;
+N     char _cnt;
+N     char _cnt_old;
+N     char _cnt_more2;
+N     char _buff[16]; 
+N     signed _Uio; 
+N     signed _Ii;
+N     signed _Ti; 
+N	signed _Uil;
+N	signed _Uin;
+N	signed _Pio;
+N     char _flags_tu;
+N     signed _vol_u;
+N     signed _vol_i;
+N     char _is_on_cnt;
+N     //int _ist_blok_host_cnt_; //блокирование источников извне(CAN или RS), если не 0 то источник заблокирован.
+N     int _ist_blok_host_cnt;
+N     short _blok_cnt; //блокирование источников 
+N     char _flags_tm;
+N	char _flags_tm_old;
+N	signed short _overload_av_cnt;     
+N     signed short _temp_av_cnt;
+N     signed short _umax_av_cnt;
+N     signed short _umin_av_cnt;
+N     signed _rotor;
+N     signed  short _x_; 
+N     char _adr_ee;
+N	char _last_avar;
+N	char _Pnom;
+N	char _Uoutmin;
+N	char _Uoutmax;
+N	char _net_contr_en;
+N	char _pwm_en;
+N	char _phase_mode;
+N
+N     } INV_STAT; 
+N#ifdef UKU_220_V2
+Sextern INV_STAT inv[3];
+N#endif
+N#ifndef UKU_220_V2
+Nextern INV_STAT inv[20];
+N#endif
+Nextern char first_inv_slot;
+N
+N//***********************************************
+N//Состояние нагрузки
+Nextern signed short load_U;
+Nextern signed short load_I;
+N
+N//***********************************************
+N//Состояние выхода
+Nextern signed short bps_U;
+Nextern signed short out_U;
+Nextern signed short in_U;
+Nextern signed short out_I;
+Nextern signed short vd_U;
+Nextern signed short bps_I;
+Nextern signed short sys_T;
+N
+N//***********************************************
+N//Состояние первичной сети
+Nextern signed short net_U,net_Ustore,net_Ua,net_Ub,net_Uc;
+Nextern char bFF,bFF_;
+Nextern signed short net_F,hz_out,hz_out_cnt,net_F3;
+Nextern signed char unet_drv_cnt;
+Nextern char net_av;
+N
+N
+Nextern char plazma_plazma_plazma;
+N
+Nvoid bitmap_hndl(void);
+Nvoid ind_hndl(void);
+N__irq void timer1_interrupt(void);
+N__irq void timer0_interrupt(void); 
+N
+N
+N//***********************************************
+N//Состояние внешних датчиков
+N//signed short tout[4];
+Nextern char tout_max_cnt[4],tout_min_cnt[4];
+Ntypedef enum {tNORM,tMAX,tMIN}enum_tout_stat;
+Nextern enum_tout_stat tout_stat[4];
+Nextern signed short t_ext[3];
+Nextern char ND_EXT[3];
+Nextern signed char sk_cnt[4],sk_av_cnt[4];
+Ntypedef enum  {ssOFF,ssON} enum_sk_stat;
+Nextern enum_sk_stat sk_stat[4];
+Ntypedef enum  {sasOFF,sasON} enum_sk_av_stat;
+Nextern enum_sk_av_stat sk_av_stat[4],sk_av_stat_old[4];
+Nextern signed short t_box,t_box_warm,t_box_vent;
+Nextern char TELECORE2017_EXT_VENT_PWM,TELECORE2017_INT_VENT_PWM;
+N
+N//***********************************************
+N//Звуки
+Nextern BOOL bSILENT;
+N
+N//***********************************************
+N//Тест
+Ntypedef enum {tstOFF,tst1,tst2} enum_tst_state;
+Nextern enum_tst_state tst_state[15];
+N
+N//-----------------------------------------------
+N//Контроль заряда
+Nextern char sign_U[2],sign_I[2];
+Nextern char superviser_cnt;
+N
+N//-----------------------------------------------
+N//Плата расширения
+Nextern unsigned short adc_buff_ext_[3];
+Nextern unsigned short Uvv[3];
+Nextern unsigned short Uvv0;
+Nextern short pos_vent;
+Nextern short t_ext_can;
+Nextern char t_ext_can_nd;
+N
+N//-----------------------------------------------
+N//Плата расширения 2
+Nextern char eb2_data[30];
+Nextern short eb2_data_short[10];
+Nextern short Uvv_eb2[3],Upes_eb2[3];
+Nextern short Kvv_eb2[3],Kpes_eb2[3];
+N
+N//-----------------------------------------------
+N//Состояние вводов
+Nextern signed short vvod_pos;
+N
+N//-----------------------------------------------
+N//Работа со щетчиком
+Nextern signed long power_summary;
+Nextern signed short power_current;
+Nextern signed long power_summary_tempo,power_summary_tempo_old;
+Nextern signed short power_current_tempo,power_current_tempo_old;
+Nextern char powerSummaryCnt;
+Nextern char powerCurrentCnt;
+N
+N
+Nextern char bRESET;
+Nextern char bRESET_EXT;
+Nextern char bRESET_INT_WDT;
+Nextern char bRESET_EXT_WDT;
+N
+N//-----------------------------------------------
+N//Климатконтроль и вентиляторы
+Nextern signed short main_vent_pos;
+Nextern signed char t_box_cnt;
+Ntypedef enum  {mvsOFF,mvsON} enum_mixer_vent_stat;
+Nextern enum_mixer_vent_stat mixer_vent_stat;
+Ntypedef struct
+N     {
+N	signed short _T[4];
+N	char _nd[4];
+N	signed short _T_dispers[4];
+N	char _max_dispers_num;
+N	signed short _max_dispers;
+N    	signed short _avg1;
+N	signed short _avg2;
+N	char _avg_cnt;
+N     } INT_BOX_TEMPER;
+Nextern INT_BOX_TEMPER ibt;
+Ntypedef enum {tbdsON,tbdsOFF,tbdsMNL} enum_tbatdisable_stat;
+Nextern enum_tbatdisable_stat tbatdisable_stat;
+Ntypedef enum {tldsON,tldsOFF,tldsMNL} enum_tloaddisable_stat;
+Nextern enum_tloaddisable_stat tloaddisable_stat;
+Ntypedef enum {atsOFF,atsON} enum_av_tbox_stat;
+Nextern enum_av_tbox_stat av_tbox_stat;
+Nextern signed short av_tbox_cnt;
+Nextern char tbatdisable_cmnd,tloaddisable_cmnd;
+Nextern short tbatdisable_cnt,tloaddisable_cnt;
+N#ifdef UKU_KONTUR
+Sextern short t_box_vent_on_cnt;
+Sextern short t_box_warm_on_cnt;
+Stypedef enum {vsOFF,vsON} enum_vent_stat;
+Sextern enum_vent_stat vent_stat_k;
+Stypedef enum {wsOFF,wsON} enum_warm_stat;
+Sextern enum_warm_stat warm_stat_k;
+N#endif
+N
+N#ifdef UKU_TELECORE2015
+Sextern short t_box_vent_on_cnt;
+Sextern short t_box_warm_on_cnt;
+Sextern short t_box_vvent_on_cnt;
+Stypedef enum {vsOFF,vsON} enum_vent_stat;
+Sextern enum_vent_stat vent_stat_k,vvent_stat_k;
+Stypedef enum {wsOFF,wsON} enum_warm_stat;
+Sextern enum_warm_stat warm_stat_k;
+Sextern signed short TELECORE2015_KLIMAT_WARM_ON_temp;
+N#endif
+N
+N#ifdef UKU_TELECORE2017
+Sextern short t_box_vent_on_cnt;
+Sextern short t_box_warm_on_cnt;
+Sextern short t_box_vvent_on_cnt;
+Stypedef enum {vsOFF,vsON} enum_vent_stat;
+Sextern enum_vent_stat vent_stat_k,vvent_stat_k;
+Stypedef enum {wsOFF,wsON} enum_warm_stat;
+Sextern enum_warm_stat warm_stat_k;
+Sextern signed short TELECORE2017_KLIMAT_WARM_ON_temp;
+Sextern signed char t_box_warm_minus20_cnt;
+Sextern signed char t_box_warm_plus65_cnt;
+Sextern signed char t_box_cool_plus70_cnt;
+S#define ULAUNCH UB0
+S#define ULINECC UB20
+N#endif
+N
+Nextern char ext_can_cnt;
+N
+N
+Nsigned short abs_pal(signed short in);
+Nvoid ADC_IRQHandler(void);
+N
+N
+N//-----------------------------------------------
+N//Состояние контролируемых автоматов нагрузки 
+Ntypedef enum  {avtOFF,avtON} enum_avt_stat;
+Nextern enum_avt_stat avt_stat[12],avt_stat_old[12]; 
+N
+N//-----------------------------------------------
+N//Показания АЦП на плате измерения тока батареи
+Nextern signed long ibat_metr_buff_[2];
+Nextern short bIBAT_SMKLBR;
+Nextern char ibat_metr_cnt;
+N
+N//-----------------------------------------------
+N//Управление низкоприоритетной нагрузкой
+Nextern signed short npn_tz_cnt;
+Ntypedef enum {npnsOFF=0,npnsON} enum_npn_stat;
+Nextern enum_npn_stat npn_stat;
+N
+Nextern char snmp_plazma;
+N
+N
+Nextern char ips_bat_av_vzvod;
+Nextern char ips_bat_av_stat;
+N
+Nextern char rel_warm_plazma;
+Nextern char can_byps_plazma0,can_byps_plazma1;
+N
+Nextern short plazma_bat_drv0,plazma_bat_drv1,bat_drv_cnt_cnt;
+Nextern unsigned short bat_drv_rx_cnt;
+Nextern char bat_drv_rx_buff[512];
+Nextern char bat_drv_rx_in;
+N
+Nextern short can_plazma;
+N
+N//-----------------------------------------------
+N//Климатконтроль TELECORE2015	
+N#ifdef UKU_TELECORE2015
+Sextern signed short TELECORE2015_KLIMAT_WARM_SIGNAL;
+Sextern signed short TELECORE2015_KLIMAT_VENT_SIGNAL;
+Sextern signed short TELECORE2015_KLIMAT_WARM_ON;
+Sextern signed short TELECORE2015_KLIMAT_WARM_OFF;
+Sextern signed short TELECORE2015_KLIMAT_CAP;
+Sextern signed short TELECORE2015_KLIMAT_VENT_ON;
+Sextern signed short TELECORE2015_KLIMAT_VENT_OFF;
+Sextern signed short TELECORE2015_KLIMAT_VVENT_ON;
+Sextern signed short TELECORE2015_KLIMAT_VVENT_OFF;
+N#endif
+N
+N
+N#ifndef FALSE
+N#define FALSE   (0)
+N#endif
+N
+N#ifndef TRUE
+N#define TRUE    (1)
+N#endif
+N
+N//-----------------------------------------------
+N//Ускоренный заряд
+Nextern signed short speedChrgCurr;			//максимальный ток ускоренного заряда, отображение из ЕЕПРОМ
+Nextern signed short speedChrgVolt;			//максимальное напряжение ускоренного заряда, отображение из ЕЕПРОМ
+Nextern signed short speedChrgTimeInHour; 	//максимальное время ускоренного заряда в часах, отображение из ЕЕПРОМ
+Nextern signed short speedChrgAvtEn;	 		//Автоматическое включение Ускоренного заряда включено/выключено
+Nextern signed short speedChrgDU;	    	//Просадка напряжения необходимая для включения ускоренного заряда
+Nextern signed short speedChIsOn;			//Текущее состояние ускоренного заряда вкл/выкл
+Nextern signed long  speedChTimeCnt;			//Счетчик времени прямой ускоренного заряда
+Nextern signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1-СК1, 2-СК2
+Nextern signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
+Nextern signed short speedChrgBlckStat;		//Сигнал блокировки для выравнивающего и ускоренного заряда.
+Nextern char  		speedChrgShowCnt;		//Счетчик показа информационного сообщения
+N
+N//-----------------------------------------------
+N//Блокировка ИПС
+Nextern signed short ipsBlckSrc;
+Nextern signed short ipsBlckLog;
+Nextern signed short ipsBlckStat;
+N
+N//-----------------------------------------------
+N//Контроль выходного напряжения
+Nextern signed short outVoltContrHndlCnt;		//Счетчик, считает в плюс в случае выполнения условия аварии
+Nextern signed short outVoltContrHndlCnt_;		//Счетчик, считает в плюс в случае отсутствия выполнения условия аварии
+Nextern char uout_av;
+N
+N//-----------------------------------------------
+N//Контроль работы вольтдобавки
+Nextern char bVDISWORK;
+Nextern char vd_is_work_cnt;
+N
+Nextern short plazma_numOfCells;
+Nextern short plazma_numOfTemperCells;
+Nextern short plazma_numOfPacks;
+N
+Nextern char plazma_ztt[2];
+Nextern char plazma1809;
+N
+Nextern U8 socket_tcp;
+N
+N//-----------------------------------------------
+N//Выравнивание токов ИПС
+Nextern char ica_plazma[10];
+Nextern char ica_timer_cnt;
+Nextern signed short ica_my_current;
+Nextern signed short ica_your_current;
+Nextern signed short ica_u_necc;
+Nextern U8 tcp_soc_avg;
+Nextern U8 tcp_connect_stat;
+N
+N//-----------------------------------------------
+N//Авария по перегрузке
+Nextern short overloadHndlCnt;
+Nextern char overloadAvar;
+N
+N//-----------------------------------------------
+N//Авария по выходному напряжению
+Nextern short uAvarHndlOutUMaxCnt,uAvarHndlOutUMinCnt;
+Nextern char uOutAvar;
+N
+N//-----------------------------------------------
+N//Авария по входному напряжению
+Nextern short uAvarHndlInUMaxCnt,uAvarHndlInUMinCnt;
+Nextern char uInAvar;
+N
+N//-----------------------------------------------
+N//Авария по температуре системы
+Nextern short sysTAvarHndlCnt;
+Nextern char sysTAvar;
+N
+N//***********************************************
+N//Состояния аварий для реле
+Nextern short rele_av_flags;
+Nextern short avar_vd_stat;
+N
+Nextern short pvlk;
+N//-----------------------------------------------
+N//Ресурс вентиляторов
+N//extern char vent_resurs_temp[4];
+N
+N/*----------------------------------------------------------------------------
+N * end of file
+N *---------------------------------------------------------------------------*/
+L 4 "gran.c" 2
+N
+N//-----------------------------------------------
+Nvoid gran_ring_char(signed char *adr, signed char min, signed char max)
+N{
+Nif (*adr<min) *adr=max;
+Nif (*adr>max) *adr=min; 
+N} 
+N 
+N//-----------------------------------------------
+Nvoid gran_char(signed char *adr, signed char min, signed char max)
+N{
+Nif (*adr<min) *adr=min;
+Nif (*adr>max) *adr=max; 
+N} 
+N
+N//-----------------------------------------------
+Nvoid gran(signed short *adr, signed short min, signed short max)
+N{
+Nif (*adr<min) *adr=min;
+Nif (*adr>max) *adr=max; 
+N} 
+N
+N//-----------------------------------------------
+Nvoid gran_ring(signed short *adr, signed short min, signed short max)
+N{
+Nif (*adr<min) *adr=max;
+Nif (*adr>max) *adr=min; 
+N} 
+N
+N//-----------------------------------------------
+Nvoid gran_long(signed long *adr, signed long min, signed long max)
+N{
+Nif (*adr<min) *adr=max;
+Nif (*adr>max) *adr=min; 
+N} 
