@@ -1,25 +1,21 @@
-M190 S70.000000
-M109 S210.000000
-;Sliced at: Tue 22-10-2019 12:25:39
-;Basic settings: Layer height: 0.05 Walls: 1 Fill: 100
-;Print time: 57 minutes
-;Filament used: 0.354m 1.0g
-;Filament cost: None
-;M190 S70 ;Uncomment to add your own bed temperature line
-;M109 S210 ;Uncomment to add your own temperature line
-G21        ;metric values
-G90        ;absolute positioning
-M82        ;set extruder to absolute mode
-M107       ;start with the fan off
-G28 X0 Y0  ;move X/Y to min endstops
-G28 Z0     ;move Z to min endstops
-G1 Z15.0 F1200 ;move the platform down 15mm
-G92 E0                  ;zero the extruded length
-G1 F200 E3              ;extrude 3mm of feed stock
-G92 E0                  ;zero the extruded length again
-G1 F1200
-;Put printing message on LCD screen
-M117 Printing...
+;Filament used: 0.354m 1.0g
+;Filament cost: None
+M190 S70 ;Uncomment to add your own bed temperature line
+M109 S210 ;Uncomment to add your own temperature line
+G21        ;metric values
+G90        ;absolute positioning
+M107       ;start with the fan off
+;M140 S0
+G28 ;X0 Y0  ;move X/Y to min endstops
+G29 ;G28 Z0     ;move Z to min endstops
+G1 Z15.0 F1200 ;move the platform down 15mm
+M190 S70
+G92 E0                  ;zero the extruded length
+G1 F200 E3              ;extrude 3mm of feed stock
+G92 E0                  ;zero the extruded length again
+G1 F1200
+;Put printing message on LCD screen
+M117 Print time: 57 minutes
 
 ;Layer count: 239
 ;LAYER:0
@@ -54842,5 +54838,5 @@ G1 Z+0.5 E-5 X-20 Y-20 F1200 ;move Z up a bit and retract filament even more
 G28 X0 Y0                              ;move X/Y to min endstops, so the head is out of the way
 M84                         ;steppers off
 G90                         ;absolute positioning
-;CURA_PROFILE_STRING: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
+;CURA_PROFILE_STRING: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
 
